@@ -1,0 +1,38 @@
+﻿
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    mc:Ignorable="d" 
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008">
+
+	<!-- Color Resources -->
+
+    <Color x:Key="FixItBrushGradient1">#BAFFD2</Color>
+    <Color x:Key="FixItBrushGradient2">#39DF68</Color>
+    <Color x:Key="FixItBrushGradient3">#00D428</Color>
+    <Color x:Key="FixItBrushGradient4">#0A5F0E</Color>
+
+    <SolidColorBrush x:Key="FixItBTextBrush" Color="#2B2B2B"/>
+
+
+    <LinearGradientBrush x:Key="FixItBrush" EndPoint="0.5,1" StartPoint="0.5,0">
+        <GradientStop Color="{StaticResource FixItBrushGradient1}" Offset="0" />
+        <GradientStop Color="{StaticResource FixItBrushGradient2}" Offset="0.41800001263618469" />
+        <GradientStop Color="{StaticResource FixItBrushGradient3}" Offset="0.418" />
+        <GradientStop Color="{StaticResource FixItBrushGradient4}" Offset="1" />
+    </LinearGradientBrush>
+
+
+
+    <Style x:Key="FixItButton" TargetType="{x:Type Button}" BasedOn="{x:Null}">
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource NuclearButtonFocusVisual}"/>
+        <Setter Property="Background" Value="{DynamicResource FixItBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}"/>
+        <Setter Property="Template" Value="{DynamicResource ButtonTemplate}" />
+        <Setter Property="Foreground" Value="{DynamicResource FixItBTextBrush}"/>
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="Margin" Value="4" />
+    </Style>
+
+
+</ResourceDictionary>

@@ -1,0 +1,32 @@
+﻿<Window x:Class="Tortuga.Drydock.Views.FixItWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tortuga.Drydock.Views"
+        mc:Ignorable="d"
+ Title="{Binding WindowTitle}" Height="600" Width="800">
+    <ScrollViewer>
+        <StackPanel>
+            <GroupBox DockPanel.Dock="Top" Visibility="{Binding VerificationSql,Converter={StaticResource NotNullToVisibleConverter}}" >
+                <GroupBox.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Verification SQL" VerticalAlignment="Center" />
+                        <Button Command="{Binding CopyVerificationSqlCommand}" Content="Copy" />
+                    </StackPanel>
+                </GroupBox.Header>
+                <TextBox TextWrapping="Wrap" Text="{Binding VerificationSql}" IsReadOnly="True"/>
+            </GroupBox>
+            <GroupBox DockPanel.Dock="Top" >
+                <GroupBox.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Change SQL" VerticalAlignment="Center" />
+                        <Button Command="{Binding CopyChangeSqlCommand}" Content="Copy" />
+                    </StackPanel>
+                </GroupBox.Header>
+                <TextBox TextWrapping="Wrap" Text="{Binding ChangeSql}" IsReadOnly="True"/>
+            </GroupBox>
+        </StackPanel>
+    </ScrollViewer>
+</Window>
+
