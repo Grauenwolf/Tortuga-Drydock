@@ -87,12 +87,21 @@ namespace Tortuga.Drydock.ViewModels
                 case FixItVM dc:
                     ShowFixItWindow(dc);
                     break;
+                case DataVM dc:
+                    ShowDataWindow(dc);
+                    break;
             }
         }
 
         public void ShowFixItWindow(FixItVM dataContext)
         {
             var window = new FixItWindow() { DataContext = dataContext };
+            window.Show();
+        }
+
+        public void ShowDataWindow(DataVM dataContext)
+        {
+            var window = new DataWindow() { DataContext = dataContext };
             window.Show();
         }
 

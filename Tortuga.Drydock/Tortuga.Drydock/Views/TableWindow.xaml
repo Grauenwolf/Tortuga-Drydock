@@ -139,7 +139,6 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <!-- Task-3: Show an error if using varChar or nVarChar and the length is 1 or 2. Recommend using char/nChar instead.-->
                     <DataGridTemplateColumn Header="MaxLength" SortMemberPath="MaxLength">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -398,7 +397,20 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <!-- Task-9: Add button that will allow seeing the 10 most frequently used values. -->
+
+                    <DataGridTemplateColumn Header=""
+											SortMemberPath="SortIndex">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Show Top 10"
+                                        ToolTip="Show the ten most frequently occuring values from the sampled data set."
+										Command="{Binding DataContext.ShowTopTenCommand, ElementName=Root}"
+										CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    
+                    
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>

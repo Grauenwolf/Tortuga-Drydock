@@ -38,7 +38,6 @@
                             />
                     <ProgressBar IsIndeterminate="{Binding IsConnecting}" Minimum="0" Maximum="1" Value="{Binding IsConnectedNumber, Mode=OneWay}" Width="100" VerticalAlignment="Stretch" />
 
-                    <!-- Task-1: move the status to a log view on a tab.-->
                     <Label Content="Status: " VerticalAlignment="Center"/>
                     <Label Content="{Binding Status}" VerticalAlignment="Center"/>
                 </StackPanel>

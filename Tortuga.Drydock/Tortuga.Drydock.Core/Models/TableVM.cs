@@ -1,5 +1,4 @@
 using System;
-using System.Windows.Input;
 using Tortuga.Chain;
 using Tortuga.Sails;
 

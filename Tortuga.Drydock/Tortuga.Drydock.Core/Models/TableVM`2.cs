@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -111,6 +112,25 @@ namespace Tortuga.Drydock.Models
         }
 
         public override string FullName => Table.Name.ToString();
+
+        public ICommand ShowTopTenCommand => GetCommand<ColumnModel<TDbType>>(async t => await ShowTopTenAsync(t));
+
+
+        protected abstract Task<DataTable> OnShowTopTenAsync(ColumnModel<TDbType> column);
+
+        async Task ShowTopTenAsync(ColumnModel<TDbType> column)
+        {
+            //The database-specific OnShowTopTenAsync will eventually be replaced by Chain's Aggregate functionality
+            //https://github.com/docevaad/Chain/milestone/9
+
+            var model = new DataVM()
+            {
+                Data = await OnShowTopTenAsync(column),
+                WindowTitle = $"Top 10 values for {Table.Name}.{column.Column.SqlName}"
+            };
+            RequestDialog(model);
+        }
+
     }
 }
 

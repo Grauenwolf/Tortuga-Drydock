@@ -130,6 +130,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="Views\DataWindow.xaml.cs">
+      <DependentUpon>DataWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\FixItWindow.xaml.cs">
       <DependentUpon>FixItWindow.xaml</DependentUpon>
     </Compile>
@@ -156,6 +159,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\DataWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\FixItWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

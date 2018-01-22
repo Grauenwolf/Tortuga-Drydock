@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Data.OleDb;
 using System.Threading.Tasks;
 using Tortuga.Chain;
@@ -18,7 +19,10 @@ namespace Tortuga.Drydock.Models.Access
         {
             throw new NotImplementedException("Task-12 implement analyze columns");
         }
-
+        protected override Task<DataTable> OnShowTopTenAsync(ColumnModel<OleDbType> column)
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }

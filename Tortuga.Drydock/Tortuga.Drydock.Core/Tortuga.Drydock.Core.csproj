@@ -109,6 +109,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\DataVM.cs" />
     <Compile Include="Models\FixItOperation.cs" />
     <Compile Include="Models\FixItOperationCollection.cs" />
     <Compile Include="Models\LogEventArgs.cs" />
