@@ -49,29 +49,28 @@
                         IsEnabled="{Binding Idle}"
                         Visibility="{Binding SuggestPrimaryKeyButton, Converter={StaticResource TrueToVisibleConverter}}" />
 
-                    <Button Content="Add Identity Column"
-							Command="{Binding FixAddIdentityColumnCommand}"
+                    <ItemsControl ItemsSource="{Binding FixItOperations}" IsEnabled="{Binding Idle}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding Title}"
+							Command="{Binding FixItCommand}"
                             Style="{StaticResource FixItButton}"
-							IsEnabled="{Binding Idle}"
-                            ToolTip="Generate script to add an identity column and mark it as the primary key."
-							Visibility="{Binding ShowAddIdentityColumn, Converter={StaticResource TrueToVisibleConverter}}" />
+							
+                            ToolTip="{Binding ToolTip}"
+							Visibility="{Binding ShowFixIt, Converter={StaticResource TrueToVisibleConverter}}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
 
-                    <Border Visibility="{Binding SupportsSparse, Converter={StaticResource TrueToVisibleConverter}}">
-                        <!-- Task-24 Move this into a generic analysis tool list.-->
-                        <Button
-                            Command="{Binding FixSparseCommand}"
-                            Content="Sparse Columns"
-                            IsEnabled="{Binding Idle}"
-                            Style="{StaticResource FixItButton}"
-                            ToolTip="Generate script to mark columns as sparse."
-                            Visibility="{Binding ShowSparseFixIt, Converter={StaticResource TrueToVisibleConverter}}" />
-                    </Border>
-                    <Button Content="Nullable Columns"
-							Command="{Binding FixNullCommand}"
-                            Style="{StaticResource FixItButton}"
-							IsEnabled="{Binding Idle}"
-                            ToolTip="Generate script to mark columns as non-nullable."
-							Visibility="{Binding ShowNullFixIt, Converter={StaticResource TrueToVisibleConverter}}" />
+                    
+
+                    
+                    
                     <!--
 
                     Task-19

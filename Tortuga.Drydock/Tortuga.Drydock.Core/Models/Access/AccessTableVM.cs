@@ -19,9 +19,6 @@ namespace Tortuga.Drydock.Models.Access
             throw new NotImplementedException("Task-12 implement analyze columns");
         }
 
-        protected override void FixNull()
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

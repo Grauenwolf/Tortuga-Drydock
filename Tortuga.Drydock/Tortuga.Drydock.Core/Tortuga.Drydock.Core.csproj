@@ -109,6 +109,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\FixItOperation.cs" />
+    <Compile Include="Models\FixItOperationCollection.cs" />
     <Compile Include="Models\LogEventArgs.cs" />
     <Compile Include="Models\Access\AccessDatabase.cs" />
     <Compile Include="Models\Access\AccessTableVM.cs" />
@@ -118,8 +120,12 @@
     <Compile Include="Models\DatabaseVM.cs" />
     <Compile Include="Models\DialogRequestedEventArgs.cs" />
     <Compile Include="Models\FixItVM.cs" />
+    <Compile Include="Models\PostgreSql\FixNulls.cs" />
     <Compile Include="Models\PostgreSql\PostgreSqlTableVM.cs" />
     <Compile Include="Models\SQLite\SQLiteTableVM.cs" />
+    <Compile Include="Models\SqlServer\FixAddIdentityColumn.cs" />
+    <Compile Include="Models\SqlServer\FixNulls.cs" />
+    <Compile Include="Models\SqlServer\FixSparse.cs" />
     <Compile Include="Models\SqlServer\SqlServerColumnModel.cs" />
     <Compile Include="Models\SqlServer\SqlServerTableVM.cs" />
     <Compile Include="Models\TableVM`2.cs" />

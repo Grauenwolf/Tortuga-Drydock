@@ -26,7 +26,7 @@ namespace Tortuga.Drydock.Models
 
         public ICommand AnalyzeColumnsCommand
         {
-            get { return GetCommand(async () => await AnalyzeColumnAsync()); }
+            get { return GetCommand(async () => await AnalyzeColumnsAsync()); }
         }
 
         public ColumnCollection<TDbType> Columns { get => GetNew<ColumnCollection<TDbType>>(); }
@@ -45,7 +45,6 @@ namespace Tortuga.Drydock.Models
         public bool SuggestPrimaryKeyButton { get => Get<bool>(); private set => Set(value); }
 
         public ICommand SuggestPrimaryKeyCommand => GetCommand(async () => await SuggestPrimaryKeyAsync());
-        public ICommand FixAddIdentityColumnCommand => GetCommand(() => FixAddIdentityColumn());
 
         public TableOrViewMetadata<TName, TDbType> Table { get; }
 
@@ -66,7 +65,7 @@ namespace Tortuga.Drydock.Models
 
         public virtual string WindowTitle => "Table: " + Table.Name.ToString();
 
-        async Task AnalyzeColumnAsync()
+        async Task AnalyzeColumnsAsync()
         {
             var exceptions = new List<Exception>();
 
@@ -92,6 +91,7 @@ namespace Tortuga.Drydock.Models
                 StopWork();
 
             }
+            FixItOperations.RefreshAll();
 
         }
 
@@ -99,7 +99,7 @@ namespace Tortuga.Drydock.Models
         {
             StartWork();
 
-            await AnalyzeColumnAsync();
+            await AnalyzeColumnsAsync();
 
             foreach (var column in Columns.Where(c => c.IsUnique == true && (c.NullCount ?? 0) == 0))
                 column.IsPrimaryKeyCandidate = true;

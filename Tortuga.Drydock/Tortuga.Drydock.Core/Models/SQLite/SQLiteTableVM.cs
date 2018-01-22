@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 using Tortuga.Chain;
 using Tortuga.Chain.Metadata;
@@ -20,9 +19,5 @@ namespace Tortuga.Drydock.Models.SQLite
             throw new NotImplementedException("Task-12 implement analyze columns");
         }
 
-        protected override void FixNull()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

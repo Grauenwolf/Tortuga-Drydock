@@ -89,20 +89,11 @@ namespace Tortuga.Drydock.Models
             DialogRequested?.Invoke(this, new DialogRequestedEventArgs(dataContext));
         }
 
-
-        public ICommand FixNullCommand => GetCommand(FixNull);
-
-        protected virtual void FixNull() => throw new NotSupportedException();
-        protected virtual void FixAddIdentityColumn() => throw new NotSupportedException();
-
-        public virtual bool SupportsFixNull => false;
-
-        public virtual bool SupportsAnalyzeColumn => false;
-        public virtual bool SupportsAddIdentityColumn => false;
-
-        public bool ShowNullFixIt { get => Get<bool>(); protected set => Set(value); }
-
         public abstract string FullName { get; }
+
+        public FixItOperationCollection FixItOperations => GetNew<FixItOperationCollection>();
+
+
 
     }
 }
