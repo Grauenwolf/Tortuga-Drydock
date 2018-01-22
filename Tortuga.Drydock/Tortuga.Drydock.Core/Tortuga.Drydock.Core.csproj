@@ -125,6 +125,7 @@
     <Compile Include="Models\SQLite\SQLiteTableVM.cs" />
     <Compile Include="Models\SqlServer\FixAddIdentityColumn.cs" />
     <Compile Include="Models\SqlServer\FixNulls.cs" />
+    <Compile Include="Models\SqlServer\FixObsoleteTypes.cs" />
     <Compile Include="Models\SqlServer\FixSparse.cs" />
     <Compile Include="Models\SqlServer\SqlServerColumnModel.cs" />
     <Compile Include="Models\SqlServer\SqlServerTableVM.cs" />

@@ -105,6 +105,7 @@ namespace Tortuga.Drydock.Models
 
 
         public virtual string ObsoleteMessage { get => null; }
+        public virtual string ObsoleteReplaceType { get => null; }
 
         public int? SampleSize { get => Get<int?>(); set => Set(value); }
         public bool StatsLoaded { get => Get<bool>(); set => Set(value); }

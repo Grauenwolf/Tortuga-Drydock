@@ -17,10 +17,8 @@ namespace Tortuga.Drydock.Models.SqlServer
 
         public override string ToolTip => "Generate script to mark columns as sparse or non-sparse as appropriate.";
 
-        public override void Refresh()
-        {
-            ShowFixIt = m_TableVM.Columns.Cast<SqlServerColumnModel>().Any(x => x.SparseCandidate || x.SparseWarning);
-        }
+        protected override bool OnRefresh() => m_TableVM.Columns.Cast<SqlServerColumnModel>().Any(x => x.SparseCandidate || x.SparseWarning);
+
         protected override FixItVM OnFixIt()
         {
             var change = new StringBuilder();

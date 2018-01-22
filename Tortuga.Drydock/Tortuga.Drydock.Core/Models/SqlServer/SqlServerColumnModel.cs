@@ -53,6 +53,30 @@ namespace Tortuga.Drydock.Models.SqlServer
             }
         }
 
+        public override string ObsoleteReplaceType
+        {
+            get
+            {
+                switch (Column.DbType)
+                {
+                    case SqlDbType.DateTime: return "dateTime2(3)";
+                    case SqlDbType.SmallDateTime: return "dateTime2(0)";
+                    case SqlDbType.Text: return "varChar(max)";
+                    case SqlDbType.NText: return "nVarChar(max)";
+                    case SqlDbType.Image: return "varBinary(max)";
+                    case SqlDbType.VarChar when Column.MaxLength == 1:
+                        return "char(1)";
+                    case SqlDbType.VarChar when Column.MaxLength == 2:
+                        return "char(2)";
+                    case SqlDbType.NVarChar when Column.MaxLength == 1:
+                        return "NChar(1)";
+                    case SqlDbType.NVarChar when Column.MaxLength == 2:
+                        return "NChar(2)";
+                }
+                return null;
+            }
+        }
+
         [CalculatedField("NullRate")]
         public bool? ShouldBeSparse
         {

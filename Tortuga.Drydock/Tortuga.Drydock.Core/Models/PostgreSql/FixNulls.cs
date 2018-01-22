@@ -14,10 +14,7 @@ namespace Tortuga.Drydock.Models.PostgreSql
 
         public override string Title => "Nullable Columns";
         public override string ToolTip => "Generate script to mark columns as non-nullable.";
-        public override void Refresh()
-        {
-            ShowFixIt = m_TableVM.Columns.Any(x => x.NullCount == 0);
-        }
+        protected override bool OnRefresh() => m_TableVM.Columns.Any(x => x.NullCount == 0);
 
         protected override FixItVM OnFixIt()
         {

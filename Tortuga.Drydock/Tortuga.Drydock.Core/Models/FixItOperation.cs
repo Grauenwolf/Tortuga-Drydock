@@ -16,12 +16,10 @@ namespace Tortuga.Drydock.Models
 
         public bool ShowFixIt { get => Get<bool>(); protected set => Set(value); }
 
-        public abstract void Refresh();
+        public void Refresh() => ShowFixIt = OnRefresh();
+        protected abstract bool OnRefresh();
 
-        void FixIt()
-        {
-            m_TableVM.RequestDialog(OnFixIt());
-        }
+        void FixIt() => m_TableVM.RequestDialog(OnFixIt());
 
         protected abstract FixItVM OnFixIt();
 

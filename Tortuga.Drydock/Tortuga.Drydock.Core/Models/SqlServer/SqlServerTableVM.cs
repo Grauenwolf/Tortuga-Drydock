@@ -15,6 +15,7 @@ namespace Tortuga.Drydock.Models.SqlServer
             FixItOperations.Add(new FixNulls(this));
             FixItOperations.Add(new FixSparse(this));
             FixItOperations.Add(new FixAddIdentityColumn(this));
+            FixItOperations.Add(new FixObsoleteTypes(this));
         }
 
         public new SqlServerDataSource DataSource { get => (SqlServerDataSource)base.DataSource; }
