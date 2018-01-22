@@ -1,9 +1,7 @@
-using System;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Tortuga.Chain;
-using Tortuga.Chain.Metadata;
 using Tortuga.Chain.SQLite;
 
 namespace Tortuga.Drydock.Models.SQLite
@@ -15,10 +13,7 @@ namespace Tortuga.Drydock.Models.SQLite
             DataSource = dataSource;
         }
 
-        public override Task PreliminaryAnalysisAsync()
-        {
-            return Task.CompletedTask;
-        }
+
 
         public override sealed async Task LoadSchemaAsync()
         {
@@ -26,7 +21,11 @@ namespace Tortuga.Drydock.Models.SQLite
             try
             {
 
-                await (Task.Run(() => DataSource.DatabaseMetadata.PreloadTables())); //Task-10, we need an async version of this. 
+                await (Task.Run(() =>
+                {
+                    DataSource.DatabaseMetadata.PreloadTables();
+                    DataSource.DatabaseMetadata.PreloadViews();
+                })); //Task-10, we need an async version of this. 
 
 
                 Tables.AddRange(DataSource.DatabaseMetadata.GetTablesAndViews().Where(t => t.IsTable).OrderBy(t => t.Name.Name).Select(t => new SQLiteTableVM(DataSource, t)));
@@ -39,9 +38,6 @@ namespace Tortuga.Drydock.Models.SQLite
 
         }
 
-        public override Task PreliminaryAnalysisAsync(TableVM table)
-        {
-            return Task.CompletedTask;
-        }
+
     }
 }

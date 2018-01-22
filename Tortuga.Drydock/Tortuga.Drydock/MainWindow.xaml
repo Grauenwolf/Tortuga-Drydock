@@ -1,4 +1,5 @@
-﻿<Window x:Class="Tortuga.Drydock.MainWindow"
+﻿
+    <Window x:Class="Tortuga.Drydock.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -16,9 +17,10 @@
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Database Type:" />
                     <RadioButton Content="SQL Server" GroupName="DatabaseType" IsChecked="{Binding UseSqlServer}"/>
-                    <RadioButton IsEnabled="false" Content="PostgreSql" GroupName="DatabaseType" IsChecked="{Binding UsePostgreSql}" />
-                    <RadioButton IsEnabled="false" Content="Access" GroupName="DatabaseType" IsChecked="{Binding UseAccess}" />
-                    <RadioButton IsEnabled="false" Content="SQLite" GroupName="DatabaseType" IsChecked="{Binding UseSQLite}" />
+                    <RadioButton Content="PostgreSql" GroupName="DatabaseType" IsChecked="{Binding UsePostgreSql}" />
+                    <RadioButton Content="Access" GroupName="DatabaseType" IsChecked="{Binding UseAccess}" />
+                    <RadioButton Content="SQLite" GroupName="DatabaseType" IsChecked="{Binding UseSQLite}" />
+                    <RadioButton IsEnabled="false" Content="MySQL" GroupName="DatabaseType" IsChecked="{Binding UseMySQL}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Connection String: " />
@@ -44,8 +46,8 @@
         </GroupBox>
 
 
-        <TabControl DockPanel.Dock="Top" Visibility="{Binding Database, Converter={StaticResource NotNullToVisibleConverter}}">
-            <TabItem Header="Tables">
+        <TabControl DockPanel.Dock="Top" SelectedIndex="{Binding SelectedTab}" >
+            <TabItem Header="Tables" Visibility="{Binding Database, Converter={StaticResource NotNullToVisibleConverter}}">
                 <DockPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" DataContext="{Binding Database}" IsEnabled="{Binding Idle}">
                         <Button Content="Preliminary Analysis"  Command="{Binding PreliminaryAnalysisCommand}" />
@@ -166,7 +168,7 @@
                     </DataGrid>
                 </DockPanel>
             </TabItem>
-            <TabItem Header="Views">
+            <TabItem Header="Views" Visibility="Collapsed">
                 <DataGrid ItemsSource="{Binding Database.Views}"
 					  AutoGenerateColumns="False"
 					  IsReadOnly="True">
@@ -191,6 +193,21 @@
 
                     </DataGrid.Columns>
                 </DataGrid>
+            </TabItem>
+            <TabItem Header="Log" >
+                <DockPanel Background="White">
+                        
+                    <ScrollViewer>
+                        
+                    <ItemsControl ItemsSource="{Binding LogEvents}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Foreground="Black" TextWrapping="Wrap" Text="{Binding}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
             </TabItem>
         </TabControl>
 

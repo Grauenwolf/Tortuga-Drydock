@@ -8,22 +8,16 @@ namespace Tortuga.Drydock.Models
     {
 
         public string ChangeSql { get => Get<string>(); set => Set(value); }
-
         public ICommand CopyChangeSqlCommand => GetCommand(CopyChangeSql);
-
+        public ICommand CopyRollBackSqlCommand => GetCommand(CopyRollBackSql);
         public ICommand CopyVerificationSqlCommand => GetCommand(CopyVerificationSql);
-        public string WindowTitle { get => Get<string>(); set => Set(value); }
-
+        public string RollBackSql { get => Get<string>(); set => Set(value); }
         public string VerificationSql { get => Get<string>(); set => Set(value); }
+        public string WindowTitle { get => Get<string>(); set => Set(value); }
+        void CopyChangeSql() => Clipboard.SetText(ChangeSql);
 
-        void CopyChangeSql()
-        {
-            Clipboard.SetText(ChangeSql);
-        }
+        void CopyRollBackSql() => Clipboard.SetText(RollBackSql);
 
-        void CopyVerificationSql()
-        {
-            Clipboard.SetText(VerificationSql);
-        }
+        void CopyVerificationSql() => Clipboard.SetText(VerificationSql);
     }
 }

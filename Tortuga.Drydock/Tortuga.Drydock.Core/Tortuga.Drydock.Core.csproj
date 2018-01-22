@@ -109,6 +109,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\LogEventArgs.cs" />
     <Compile Include="Models\Access\AccessDatabase.cs" />
     <Compile Include="Models\Access\AccessTableVM.cs" />
     <Compile Include="Models\Analyzer.cs" />

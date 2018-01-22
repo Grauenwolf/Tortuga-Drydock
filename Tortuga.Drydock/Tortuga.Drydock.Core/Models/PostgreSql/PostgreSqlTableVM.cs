@@ -26,17 +26,26 @@ namespace Tortuga.Drydock.Models.PostgreSql
 
         protected override void FixNull()
         {
+            var verification = new StringBuilder();
             var change = new StringBuilder();
-            change.AppendLine($"USE [{DataSource.Name}]");
-            foreach (var column in Columns.Where(c => c.IsNullable && c.NullCount == 0))
+            var rollBack = new StringBuilder();
+
+            var afectedColumns = Columns.Where(c => c.IsNullable && c.NullCount == 0).ToList();
+
+            foreach (var column in afectedColumns)
             {
-                change.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ALTER COLUMN [{column.Name}] SET NOT NULL");
+                change.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} SET NOT NULL");
+                rollBack.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} SET NULL");
             }
+
+            verification.AppendLine($"SELECT * FROM {Table.Name.ToQuotedString()} WHERE " + string.Join(" OR ", afectedColumns.Select(x => $"{x.Column.QuotedSqlName} IS NULL")));
 
             var model = new FixItVM()
             {
                 WindowTitle = $"Nullable columns without nulls for {Table.Name.ToString()}",
-                ChangeSql = change.ToString()
+                VerificationSql = verification.ToString(),
+                ChangeSql = change.ToString(),
+                RollBackSql = rollBack.ToString()
             };
             RequestDialog(model);
         }

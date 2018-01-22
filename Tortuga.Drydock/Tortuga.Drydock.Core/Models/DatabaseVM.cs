@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Tortuga.Chain;
-using Tortuga.Chain.DataSources;
 using Tortuga.Drydock.Models.Access;
 using Tortuga.Drydock.Models.PostgreSql;
 using Tortuga.Drydock.Models.SQLite;
@@ -21,7 +20,7 @@ namespace Tortuga.Drydock.Models
 
         //public abstract IDatabaseMetadataCache DatabaseMetadata { get; }
 
-        public IDataSource DataSource { get => GetDataSource(); }
+        public IClass1DataSource DataSource { get => GetDataSource(); }
 
 
 
@@ -42,6 +41,8 @@ namespace Tortuga.Drydock.Models
                 case DatabaseType.SQLite:
                     return new SQLiteDatabase(new SQLiteDataSource(connectionString));
 
+                //case DatabaseType.MySQL:
+                //    return new MySQLDatabase(new SQLiteDataSource(connectionString));
 
 
                 default:
@@ -52,7 +53,7 @@ namespace Tortuga.Drydock.Models
         public abstract Task LoadSchemaAsync();
 
 
-        protected abstract IDataSource GetDataSource();
+        protected abstract IClass1DataSource GetDataSource();
 
 
         public ICommand PreliminaryAnalysisCommand => GetCommand(async () => await PreliminaryAnalysisAsync());
@@ -92,7 +93,10 @@ namespace Tortuga.Drydock.Models
         /// Attaches the UI events to the view models.
         /// </summary>
         /// <param name="dialogRequestedEventHandler">The dialog requested event handler.</param>
-        public abstract void AttachUIEvents(EventHandler<DialogRequestedEventArgs> dialogRequestedEventHandler);
+        public abstract void AttachUIEvents(
+            EventHandler<DialogRequestedEventArgs> dialogRequestedEventHandler,
+            EventHandler<LogEventArgs> logEventHandler
+            );
     }
 }
 

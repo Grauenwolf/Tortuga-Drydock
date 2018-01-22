@@ -106,19 +106,27 @@ namespace Tortuga.Drydock.Models.SqlServer
         {
             var change = new StringBuilder();
             change.AppendLine($"USE [{DataSource.Name}]"); //Task-25 replace this with something more reliable.
+
+            var rollBack = new StringBuilder();
+            rollBack.AppendLine($"USE [{DataSource.Name}]");
+
+
             foreach (var column in Columns.Cast<SqlServerColumnModel>().Where(c => c.SparseCandidate))
             {
-                change.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ALTER COLUMN [{column.Name}] {column.Column.FullTypeName} SPARSE");
+                change.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} {column.Column.FullTypeName} SPARSE");
+                rollBack.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} {column.Column.FullTypeName} NULL");
             }
             foreach (var column in Columns.Cast<SqlServerColumnModel>().Where(c => c.SparseWarning))
             {
-                change.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ALTER COLUMN [{column.Name}] {column.Column.FullTypeName} NULL");
+                change.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} {column.Column.FullTypeName} NULL");
+                rollBack.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} {column.Column.FullTypeName} SPARSE");
             }
 
             var model = new FixItVM()
             {
                 WindowTitle = $"Sparse columns for {Table.Name.ToString()}",
-                ChangeSql = change.ToString()
+                ChangeSql = change.ToString(),
+                RollBackSql = rollBack.ToString()
             };
             RequestDialog(model);
         }
@@ -129,17 +137,34 @@ namespace Tortuga.Drydock.Models.SqlServer
 
         protected override void FixNull()
         {
+            var verification = new StringBuilder();
             var change = new StringBuilder();
+            var rollBack = new StringBuilder();
+
+            verification.AppendLine($"USE [{DataSource.Name}]");
             change.AppendLine($"USE [{DataSource.Name}]");
-            foreach (var column in Columns.Where(c => c.IsNullable && c.NullCount == 0))
+            rollBack.AppendLine($"USE [{DataSource.Name}]");
+
+            var afectedColumns = Columns.Where(c => c.IsNullable && c.NullCount == 0).Cast<SqlServerColumnModel>().ToList();
+
+            verification.AppendLine($"SELECT * FROM {Table.Name.ToQuotedString()} WHERE " + string.Join(" OR ", afectedColumns.Select(x => $"{x.Column.QuotedSqlName} IS NULL")));
+
+            foreach (var column in afectedColumns)
             {
-                change.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ALTER COLUMN [{column.Name}] {column.Column.FullTypeName} NOT NULL");
+                change.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} {column.Column.FullTypeName} NOT NULL");
+
+                if (column.IsSparse)
+                    rollBack.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} {column.Column.FullTypeName} SPARSE");
+                else
+                    rollBack.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} {column.Column.FullTypeName} NULL");
             }
 
             var model = new FixItVM()
             {
                 WindowTitle = $"Nullable columns without nulls for {Table.Name.ToString()}",
-                ChangeSql = change.ToString()
+                ChangeSql = change.ToString(),
+                RollBackSql = rollBack.ToString(),
+                VerificationSql = verification.ToString()
             };
             RequestDialog(model);
         }
@@ -151,10 +176,16 @@ namespace Tortuga.Drydock.Models.SqlServer
             change.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ADD [Id] INT NOT NULL IDENTITY");
             change.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ADD PK_{Table.Name.Name} PRIMARY KEY (Id)");
 
+            var rollBack = new StringBuilder();
+            rollBack.AppendLine($"USE [{DataSource.Name}]");
+            rollBack.AppendLine($"DROP INDEX PK_{Table.Name.Name} ON {Table.Name.ToQuotedString()}");
+            rollBack.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} DROP COLUMN [Id]");
+
             var model = new FixItVM()
             {
                 WindowTitle = $"Create identity column for {Table.Name.ToString()}",
-                ChangeSql = change.ToString()
+                ChangeSql = change.ToString(),
+                RollBackSql = rollBack.ToString()
             };
             RequestDialog(model);
         }

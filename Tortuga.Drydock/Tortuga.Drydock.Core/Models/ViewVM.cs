@@ -8,7 +8,6 @@ namespace Tortuga.Drydock.Models
     {
         readonly TableOrViewMetadata m_View;
 
-
         public ViewVM(TableOrViewMetadata view)
         {
             if (view.IsTable)

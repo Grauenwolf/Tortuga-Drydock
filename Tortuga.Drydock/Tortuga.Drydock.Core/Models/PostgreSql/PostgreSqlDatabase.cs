@@ -13,10 +13,7 @@ namespace Tortuga.Drydock.Models.PostgreSql
             DataSource = dataSource;
         }
 
-        public override Task PreliminaryAnalysisAsync()
-        {
-            return Task.CompletedTask;
-        }
+
 
         public override sealed async Task LoadSchemaAsync()
         {
@@ -24,7 +21,11 @@ namespace Tortuga.Drydock.Models.PostgreSql
             try
             {
 
-                await (Task.Run(() => DataSource.DatabaseMetadata.PreloadTables())); //Task-10, we need an async version of this. 
+                await (Task.Run(() =>
+                {
+                    DataSource.DatabaseMetadata.PreloadTables();
+                    DataSource.DatabaseMetadata.PreloadViews();
+                })); //Task-10, we need an async version of this. 
 
 
                 Tables.AddRange(DataSource.DatabaseMetadata.GetTablesAndViews().Where(t => t.IsTable).OrderBy(t => t.Name.Schema).ThenBy(t => t.Name.Name).Select(t => new PostgreSqlTableVM(DataSource, t)));
@@ -37,9 +38,6 @@ namespace Tortuga.Drydock.Models.PostgreSql
 
         }
 
-        public override Task PreliminaryAnalysisAsync(TableVM table)
-        {
-            return Task.CompletedTask;
-        }
+
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Tortuga.Anchor.Collections;
 using Tortuga.Anchor.Modeling;
 using Tortuga.Drydock.Models;
 using Tortuga.Drydock.Properties;
@@ -17,40 +18,12 @@ namespace Tortuga.Drydock.ViewModels
         private static readonly ILog s_Log = LogManager.GetLogger(typeof(App));
 
 
-        public DatabaseVM Database { get => Get<DatabaseVM>(); set => Set(value); }
-        public bool IsConnecting { get => Get<bool>(); private set => Set(value); }
-        public bool IsConnected { get => Get<bool>(); private set => Set(value); }
+        ObservableCollectionExtended<string> m_LogEvents = new ObservableCollectionExtended<string>();
 
-        [CalculatedField("IsConnected")]
-        public int IsConnectedNumber { get => IsConnected ? 1 : 0; }
-
-        public string Status { get => Get<string>(); private set => Set(value); }
-        public DatabaseType DatabaseType { get => GetDefault((DatabaseType)Settings.Default.LastDatabaseType); set => Set(value); }
-
-
-        [CalculatedField("DatabaseType")]
-        public bool UseSqlServer { get => DatabaseType == DatabaseType.SqlServer; set { if (value) DatabaseType = DatabaseType.SqlServer; } }
-
-        [CalculatedField("DatabaseType")]
-        public bool UsePostgreSql { get => DatabaseType == DatabaseType.PostgreSql; set { if (value) DatabaseType = DatabaseType.PostgreSql; } }
-
-        [CalculatedField("DatabaseType")]
-        public bool UseAccess { get => DatabaseType == DatabaseType.Access; set { if (value) DatabaseType = DatabaseType.Access; } }
-
-        [CalculatedField("DatabaseType")]
-        public bool UseSQLite { get => DatabaseType == DatabaseType.SQLite; set { if (value) DatabaseType = DatabaseType.SQLite; } }
-
+        public ICommand AnalyzeTableCommand => GetCommand<TableVM>(async t => await AnalyzeTableAsync(t));
 
         [CalculatedField("DatabaseType,IsConnecting,ConnectionString")]
-        public bool CanConnect
-        {
-            get => DatabaseType != DatabaseType.None && !IsConnecting && !string.IsNullOrWhiteSpace(ConnectionString);
-        }
-
-        public ICommand EditConnectionCommand
-        {
-            get => GetCommand(EditConnection);
-        }
+        public bool CanConnect => Enum.IsDefined(typeof(DatabaseType), DatabaseType) && !IsConnecting && !string.IsNullOrWhiteSpace(ConnectionString);
 
         [CalculatedField("DatabaseType")]
         public bool CanEditConnection
@@ -68,6 +41,123 @@ namespace Tortuga.Drydock.ViewModels
             }
         }
 
+        public ICommand ConnectCommand => GetCommand(async () => await ConnectAsync());
+
+        public string ConnectionString
+        {
+            get => GetDefault(Settings.Default.LastConnectionString);
+            set => Set(value);
+        }
+
+        public DatabaseVM Database { get => Get<DatabaseVM>(); set => Set(value); }
+        public DatabaseType DatabaseType { get => GetDefault((DatabaseType)Settings.Default.LastDatabaseType); set => Set(value); }
+        public ICommand EditConnectionCommand => GetCommand(EditConnection);
+
+        public double Height { get => GetDefault(400); set => Set(value); }
+        public bool IsConnected { get => Get<bool>(); private set => Set(value); }
+        [CalculatedField("IsConnected")]
+        public int IsConnectedNumber { get => IsConnected ? 1 : 0; }
+
+        public bool IsConnecting { get => Get<bool>(); private set => Set(value); }
+        public int SelectedTab { get => GetDefault(2); set => Set(value); }
+        public ReadOnlyObservableCollectionExtended<string> LogEvents => m_LogEvents.ReadOnlyWrapper;
+        public string Status { get => Get<string>(); private set => Set(value); }
+        [CalculatedField("DatabaseType")]
+        public bool UseAccess { get => DatabaseType == DatabaseType.Access; set { if (value) DatabaseType = DatabaseType.Access; } }
+
+        [CalculatedField("DatabaseType")]
+        public bool UseMySQL { get => DatabaseType == DatabaseType.MySQL; set { if (value) DatabaseType = DatabaseType.MySQL; } }
+
+        [CalculatedField("DatabaseType")]
+        public bool UsePostgreSql { get => DatabaseType == DatabaseType.PostgreSql; set { if (value) DatabaseType = DatabaseType.PostgreSql; } }
+
+        [CalculatedField("DatabaseType")]
+        public bool UseSQLite { get => DatabaseType == DatabaseType.SQLite; set { if (value) DatabaseType = DatabaseType.SQLite; } }
+
+        [CalculatedField("DatabaseType")]
+        public bool UseSqlServer { get => DatabaseType == DatabaseType.SqlServer; set { if (value) DatabaseType = DatabaseType.SqlServer; } }
+        public double Width { get => GetDefault(900); set => Set(value); }
+
+        public WindowState WindowState { get => GetDefault(WindowState.Normal); set => Set(value); }
+
+        public void ShowDialog(object sender, DialogRequestedEventArgs e)
+        {
+            switch (e.DataContext)
+            {
+                case FixItVM dc:
+                    ShowFixItWindow(dc);
+                    break;
+            }
+        }
+
+        public void ShowFixItWindow(FixItVM dataContext)
+        {
+            var window = new FixItWindow() { DataContext = dataContext };
+            window.Show();
+        }
+
+        async Task AnalyzeTableAsync(TableVM table)
+        {
+            var window = new TableWindow() { DataContext = table };
+            window.Height = Height;
+            window.Width = Width;
+            if (WindowState == WindowState.Maximized)
+                window.WindowState = WindowState.Maximized;
+            window.Show();
+            if (table.RowCount == null)
+                await Database.PreliminaryAnalysisAsync(table);
+        }
+
+        async Task ConnectAsync()
+        {
+            if (IsConnecting)
+                return;
+
+            IsConnecting = false;
+            IsConnected = false;
+
+            try
+            {
+                IsConnecting = true;
+
+                LogEvent($"Creating data source for {DatabaseType}");
+
+                Database = DatabaseVM.Create(DatabaseType, ConnectionString);
+
+                LogEvent($"Testing connection to {Database.DataSource.Name} ({DatabaseType})");
+
+                await Database.DataSource.TestConnectionAsync();
+
+                LogEvent($"Loading schema for {Database.DataSource.Name} ({DatabaseType})");
+
+                await Database.LoadSchemaAsync();
+                Database.AttachUIEvents(ShowDialog, LogEvent);
+
+
+                LogEvent($"Connected to {Database.DataSource.Name}!");
+
+                IsConnected = true;
+
+                SelectedTab = 0;
+
+                Settings.Default.LastConnectionString = ConnectionString;
+                Settings.Default.LastDatabaseType = (int)DatabaseType;
+                Settings.Default.Save();
+
+            }
+            catch (Exception ex)
+            {
+                LogEvent(ex.Message);
+                Database = null;
+                throw;
+            }
+            finally
+            {
+                IsConnecting = false;
+            }
+
+
+        }
 
         void EditConnection()
         {
@@ -107,110 +197,15 @@ namespace Tortuga.Drydock.ViewModels
             }
         }
 
-        //public string DatabaseName
-        //{
-        //    get { return (new SqlConnectionStringBuilder(ConnectionString)).InitialCatalog; }
-        //}
-
-        public string ConnectionString
+        void LogEvent(string message)
         {
-            get => GetDefault(Settings.Default.LastConnectionString);
-            set => Set(value);
+            s_Log.Info(message);
+            m_LogEvents.Add(message);
+            Status = message;
         }
-
-
-        public ICommand ConnectCommand
+        void LogEvent(object sender, LogEventArgs e)
         {
-            get => GetCommand(async () => await ConnectAsync());
+            LogEvent(e.Message);
         }
-
-        async Task ConnectAsync()
-        {
-            if (IsConnecting)
-                return;
-
-            IsConnecting = false;
-            IsConnected = false;
-
-            try
-            {
-                IsConnecting = true;
-
-                Status = $"Creating data source for {DatabaseType}";
-
-                Database = DatabaseVM.Create(DatabaseType, ConnectionString);
-
-                Status = $"Testing connection to {Database.DataSource.Name} ({DatabaseType})";
-
-                await Database.DataSource.TestConnectionAsync();
-
-                Status = $"Loading schema for {Database.DataSource.Name} ({DatabaseType})";
-
-                await Database.LoadSchemaAsync();
-                Database.AttachUIEvents(ShowDialog);
-
-
-                Status = $"Connected to {Database.DataSource.Name}!";
-
-                IsConnected = true;
-
-                Settings.Default.LastConnectionString = ConnectionString;
-                Settings.Default.LastDatabaseType = (int)DatabaseType;
-                Settings.Default.Save();
-
-            }
-            catch (Exception ex)
-            {
-                Status = ex.Message;
-                Database = null;
-                throw;
-            }
-            finally
-            {
-                IsConnecting = false;
-            }
-
-
-        }
-
-        public ICommand AnalyzeTableCommand
-        {
-            get { return GetCommand<TableVM>(async t => await AnalyzeTableAsync(t)); }
-        }
-
-        async Task AnalyzeTableAsync(TableVM table)
-        {
-            var window = new TableWindow() { DataContext = table };
-            window.Height = Height;
-            window.Width = Width;
-            if (WindowState == WindowState.Maximized)
-                window.WindowState = WindowState.Maximized;
-            window.Show();
-            if (table.RowCount == null)
-                await Database.PreliminaryAnalysisAsync(table);
-        }
-
-
-        public void ShowDialog(object sender, DialogRequestedEventArgs e)
-        {
-            switch (e.DataContext)
-            {
-                case FixItVM dc:
-                    ShowFixItWindow(dc);
-                    break;
-            }
-        }
-
-        public void ShowFixItWindow(FixItVM dataContext)
-        {
-            var window = new FixItWindow() { DataContext = dataContext };
-            window.Show();
-        }
-
-        public double Height { get => GetDefault(400); set => Set(value); }
-        public double Width { get => GetDefault(900); set => Set(value); }
-        public WindowState WindowState { get => GetDefault(WindowState.Normal); set => Set(value); }
-
-
     }
 }

@@ -12,13 +12,13 @@
     <Color x:Key="FixItBrushGradient3">#00D428</Color>
     <Color x:Key="FixItBrushGradient4">#0A5F0E</Color>
 
-    <SolidColorBrush x:Key="FixItBTextBrush" Color="#2B2B2B"/>
+    <SolidColorBrush x:Key="FixItTextBrush" Color="White"/>
 
 
     <LinearGradientBrush x:Key="FixItBrush" EndPoint="0.5,1" StartPoint="0.5,0">
         <GradientStop Color="{StaticResource FixItBrushGradient1}" Offset="0" />
-        <GradientStop Color="{StaticResource FixItBrushGradient2}" Offset="0.41800001263618469" />
-        <GradientStop Color="{StaticResource FixItBrushGradient3}" Offset="0.418" />
+        <GradientStop Color="{StaticResource FixItBrushGradient2}" Offset="0.15" />
+        <GradientStop Color="{StaticResource FixItBrushGradient3}" Offset="0.3" />
         <GradientStop Color="{StaticResource FixItBrushGradient4}" Offset="1" />
     </LinearGradientBrush>
 
@@ -29,7 +29,7 @@
         <Setter Property="Background" Value="{DynamicResource FixItBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}"/>
         <Setter Property="Template" Value="{DynamicResource ButtonTemplate}" />
-        <Setter Property="Foreground" Value="{DynamicResource FixItBTextBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource FixItTextBrush}"/>
         <Setter Property="Padding" Value="4" />
         <Setter Property="Margin" Value="4" />
     </Style>

@@ -24,7 +24,11 @@ namespace Tortuga.Drydock.Models.SqlServer
             try
             {
 
-                await (Task.Run(() => DataSource.DatabaseMetadata.PreloadTables())); //Task-10, we need an async version of this. 
+                await (Task.Run(() =>
+                {
+                    DataSource.DatabaseMetadata.PreloadTables();
+                    DataSource.DatabaseMetadata.PreloadViews();
+                })); //Task-10, we need an async version of this. 
 
 
                 Tables.AddRange(DataSource.DatabaseMetadata.GetTablesAndViews().Where(t => t.IsTable).OrderBy(t => t.Name.Schema).ThenBy(t => t.Name.Name).Select(t => new SqlServerTableVM(DataSource, (SqlServerTableOrViewMetadata<SqlDbType>)t)));
@@ -45,25 +49,43 @@ namespace Tortuga.Drydock.Models.SqlServer
 
             var typedTable = (SqlServerTableVM)table;
 
-            const string sql = @"SELECT	S.name AS [Schema],
-		T.name AS [Name],
-		CONVERT(BIT, CASE WHEN NOT EXISTS ( SELECT	*
-											FROM	sys.indexes i
-											WHERE	i.object_id = T.object_id AND type = 1 ) THEN 1
-						  ELSE 0
-					 END) AS IsHeap,
-		(SELECT	COUNT(*)
-		 FROM	sys.indexes i
-		 WHERE	i.object_id = T.object_id AND type <> 0
-		) AS IndexCount,
-		(SELECT SUM(p.rows) FROM sys.partitions p WHERE p.index_id < 2 AND p.object_id = t.object_id) AS [RowCount],
-		ROW_NUMBER() OVER (ORDER BY S.name, T.name) AS SortIndex,
-        T.object_id AS ObjectId
-FROM	sys.tables T
-		INNER JOIN sys.schemas S ON T.schema_id = S.schema_id
-        WHERE T.name = @Name AND S.name = @Schema
+            const string sql = @"SELECT S.name AS [Schema],
+       T.name AS Name,
+       CONVERT(   BIT,
+                  CASE
+                      WHEN NOT EXISTS
+                               (
+                                   SELECT *
+                                   FROM sys.indexes AS i
+                                   WHERE i.object_id = T.object_id
+                                         AND type = 1
+                               ) THEN
+                          1
+                      ELSE
+                          0
+                  END
+              ) AS IsHeap,
+       (
+           SELECT COUNT(*)
+           FROM sys.indexes AS i
+           WHERE i.object_id = T.object_id
+                 AND type <> 0
+       ) AS IndexCount,
+       (
+           SELECT SUM(p.rows)
+           FROM sys.partitions AS p
+           WHERE p.index_id < 2
+                 AND p.object_id = T.object_id
+       ) AS [RowCount],
+       ROW_NUMBER() OVER (ORDER BY S.name, T.name) AS SortIndex,
+       T.object_id AS ObjectId
+FROM sys.tables AS T
+    INNER JOIN sys.schemas AS S
+        ON T.schema_id = S.schema_id
+WHERE T.name = @Name
+      AND S.name = @Schema
 ORDER BY S.name,
-		T.name";
+         T.name;";
 
             var tableData = await DataSource.Sql(sql, new { typedTable.Table.Name.Schema, typedTable.Table.Name.Name }).ToObject<TableData>().ExecuteAsync();
             typedTable.ObjectId = tableData.ObjectId;
@@ -76,24 +98,41 @@ ORDER BY S.name,
 
         async public override Task PreliminaryAnalysisAsync()
         {
-            const string sql = @"SELECT	S.name AS [Schema],
-		T.name AS [Name],
-		CONVERT(BIT, CASE WHEN NOT EXISTS ( SELECT	*
-											FROM	sys.indexes i
-											WHERE	i.object_id = T.object_id AND type = 1 ) THEN 1
-						  ELSE 0
-					 END) AS IsHeap,
-		(SELECT	COUNT(*)
-		 FROM	sys.indexes i
-		 WHERE	i.object_id = T.object_id AND type <> 0
-		) AS IndexCount,
-		(SELECT SUM(p.rows) FROM sys.partitions p WHERE p.index_id < 2 AND p.object_id = t.object_id) AS [RowCount],
-		ROW_NUMBER() OVER (ORDER BY S.name, T.name) AS SortIndex,
-        T.object_id AS ObjectId
-FROM	sys.tables T
-		INNER JOIN sys.schemas S ON T.schema_id = S.schema_id
+            const string sql = @"SELECT S.name AS [Schema],
+       T.name AS Name,
+       CONVERT(   BIT,
+                  CASE
+                      WHEN NOT EXISTS
+                               (
+                                   SELECT *
+                                   FROM sys.indexes AS i
+                                   WHERE i.object_id = T.object_id
+                                         AND type = 1
+                               ) THEN
+                          1
+                      ELSE
+                          0
+                  END
+              ) AS IsHeap,
+       (
+           SELECT COUNT(*)
+           FROM sys.indexes AS i
+           WHERE i.object_id = T.object_id
+                 AND type <> 0
+       ) AS IndexCount,
+       (
+           SELECT SUM(p.rows)
+           FROM sys.partitions AS p
+           WHERE p.index_id < 2
+                 AND p.object_id = T.object_id
+       ) AS [RowCount],
+       ROW_NUMBER() OVER (ORDER BY S.name, T.name) AS SortIndex,
+       T.object_id AS ObjectId
+FROM sys.tables AS T
+    INNER JOIN sys.schemas AS S
+        ON T.schema_id = S.schema_id
 ORDER BY S.name,
-		T.name";
+         T.name;";
 
             var data = await DataSource.Sql(sql).ToCollection<TableData>().ExecuteAsync();
             foreach (SqlServerTableVM table in Tables)

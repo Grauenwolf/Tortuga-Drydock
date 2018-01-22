@@ -71,16 +71,14 @@ namespace Tortuga.Drydock.Models
         public int? IndexCount { get => Get<int?>(); set => Set(value); }
 
 
-
-        //public double Height { get => GetDefault(400); set => Set(value); }
-        //public double Width { get => GetDefault(900); set => Set(value); }
-
-
-
         /// <summary>
         /// Occurs when dialog is requested. The UI layer will listen for this event in order to show the correct UI element.
         /// </summary>
         public event EventHandler<DialogRequestedEventArgs> DialogRequested;
+
+
+
+        public event EventHandler<LogEventArgs> LogEvent;
 
         /// <summary>
         /// Requests the dialog to be displayed.

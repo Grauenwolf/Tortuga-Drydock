@@ -26,6 +26,15 @@
                 </GroupBox.Header>
                 <TextBox TextWrapping="Wrap" Text="{Binding ChangeSql}" IsReadOnly="True"/>
             </GroupBox>
+            <GroupBox DockPanel.Dock="Top" >
+                <GroupBox.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Roll Back SQL" VerticalAlignment="Center" />
+                        <Button Command="{Binding CopyRollBackSqlCommand}" Content="Copy" />
+                    </StackPanel>
+                </GroupBox.Header>
+                <TextBox TextWrapping="Wrap" Text="{Binding RollBackSql}" IsReadOnly="True"/>
+            </GroupBox>
         </StackPanel>
     </ScrollViewer>
 </Window>

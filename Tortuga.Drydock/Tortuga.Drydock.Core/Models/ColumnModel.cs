@@ -112,7 +112,7 @@ namespace Tortuga.Drydock.Models
         /// <summary>
         /// Gets a value indicating whether this column supports the distinct operator.
         /// </summary>
-        /// <value><c>true</c> if [supports distinct]; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if supports distinct; otherwise, <c>false</c>.</value>
         /// <remarks>This version uses ANSI SQL types.</remarks>
         public virtual bool SupportsDistinct
         {
