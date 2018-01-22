@@ -45,6 +45,7 @@ namespace Tortuga.Drydock.Models
         public bool SuggestPrimaryKeyButton { get => Get<bool>(); private set => Set(value); }
 
         public ICommand SuggestPrimaryKeyCommand => GetCommand(async () => await SuggestPrimaryKeyAsync());
+        public ICommand FixAddIdentityColumnCommand => GetCommand(() => FixAddIdentityColumn());
 
         public TableOrViewMetadata<TName, TDbType> Table { get; }
 

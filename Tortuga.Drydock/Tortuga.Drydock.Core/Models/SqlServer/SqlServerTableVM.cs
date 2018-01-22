@@ -77,6 +77,8 @@ namespace Tortuga.Drydock.Models.SqlServer
                     ShowSparseFixIt = true;
                 if (column.NullCount == 0)
                     ShowNullFixIt = true;
+
+
             }
 
             catch (Exception ex)
@@ -95,6 +97,7 @@ namespace Tortuga.Drydock.Models.SqlServer
         }
 
         public bool ShowSparseFixIt { get => Get<bool>(); private set => Set(value); }
+        public bool ShowAddIdentityColumn => IsHeap == true;
 
 
         public ICommand FixSparseCommand => GetCommand(FixSparse);
@@ -122,6 +125,7 @@ namespace Tortuga.Drydock.Models.SqlServer
 
         public override bool SupportsFixNull => true;
         public override bool SupportsAnalyzeColumn => true;
+        public override bool SupportsAddIdentityColumn => true;
 
         protected override void FixNull()
         {
@@ -135,6 +139,21 @@ namespace Tortuga.Drydock.Models.SqlServer
             var model = new FixItVM()
             {
                 WindowTitle = $"Nullable columns without nulls for {Table.Name.ToString()}",
+                ChangeSql = change.ToString()
+            };
+            RequestDialog(model);
+        }
+
+        protected override void FixAddIdentityColumn()
+        {
+            var change = new StringBuilder();
+            change.AppendLine($"USE [{DataSource.Name}]");
+            change.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ADD [Id] INT NOT NULL IDENTITY");
+            change.AppendLine($"ALTER TABLE {Table.Name.ToQuotedString()} ADD PK_{Table.Name.Name} PRIMARY KEY (Id)");
+
+            var model = new FixItVM()
+            {
+                WindowTitle = $"Create identity column for {Table.Name.ToString()}",
                 ChangeSql = change.ToString()
             };
             RequestDialog(model);

@@ -48,6 +48,14 @@
                         Content="Suggest Primary Key"
                         IsEnabled="{Binding Idle}"
                         Visibility="{Binding SuggestPrimaryKeyButton, Converter={StaticResource TrueToVisibleConverter}}" />
+
+                    <Button Content="Add Identity Column"
+							Command="{Binding FixAddIdentityColumnCommand}"
+                            Style="{StaticResource FixItButton}"
+							IsEnabled="{Binding Idle}"
+                            ToolTip="Generate script to add an identity column and mark it as the primary key."
+							Visibility="{Binding ShowAddIdentityColumn, Converter={StaticResource TrueToVisibleConverter}}" />
+
                     <Border Visibility="{Binding SupportsSparse, Converter={StaticResource TrueToVisibleConverter}}">
                         <!-- Task-24 Move this into a generic analysis tool list.-->
                         <Button

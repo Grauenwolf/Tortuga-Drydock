@@ -26,7 +26,7 @@ namespace Tortuga.Drydock.Models.SQLite
             try
             {
 
-                await (Task.Run(() => DataSource.DatabaseMetadata.Preload())); //Task-10, we need an async version of this. 
+                await (Task.Run(() => DataSource.DatabaseMetadata.PreloadTables())); //Task-10, we need an async version of this. 
 
 
                 Tables.AddRange(DataSource.DatabaseMetadata.GetTablesAndViews().Where(t => t.IsTable).OrderBy(t => t.Name.Name).Select(t => new SQLiteTableVM(DataSource, t)));
