@@ -98,7 +98,7 @@ namespace Tortuga.Drydock.Models.SqlServer
 
         protected override Task<DataTable> OnShowTopTenAsync(ColumnModel<SqlDbType> column)
         {
-            return DataSource.Sql($"SELECT TOP 10 ISNULL({column.Column.QuotedSqlName}, '<NULL>') AS Value, COUNT(*) AS Count FROM {Table.Name.ToQuotedString()} TABLESAMPLE ({MaxSampleSize} ROWS) WITH (READUNCOMMITTED) GROUP BY {column.Column.QuotedSqlName} ORDER BY COUNT(*) DESC").ToDataTable().ExecuteAsync();
+            return DataSource.Sql($"SELECT TOP 10 {column.Column.QuotedSqlName} AS Value, COUNT(*) AS Count FROM {Table.Name.ToQuotedString()} TABLESAMPLE ({MaxSampleSize} ROWS) WITH (READUNCOMMITTED) GROUP BY {column.Column.QuotedSqlName} ORDER BY COUNT(*) DESC").ToDataTable().ExecuteAsync();
         }
 
 
