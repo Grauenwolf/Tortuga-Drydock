@@ -92,6 +92,8 @@ ORDER BY S.name,
             typedTable.RowCount = tableData.RowCount;
             typedTable.IndexCount = tableData.IndexCount;
             typedTable.IsHeap = tableData.IsHeap;
+
+            table.FixItOperations.RefreshAll();
         }
 
 
@@ -145,6 +147,7 @@ ORDER BY S.name,
                         table.RowCount = tableData.RowCount;
                         table.IndexCount = tableData.IndexCount;
                         table.IsHeap = tableData.IsHeap;
+                        table.FixItOperations.RefreshAll();
                         break;
                     }
                 }

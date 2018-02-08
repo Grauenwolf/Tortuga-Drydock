@@ -12,7 +12,7 @@ namespace Tortuga.Drydock.Models
     public abstract class TableVM<TName, TDbType> : TableVM
         where TDbType : struct
     {
-
+        public abstract string QuotedTableName { get; }
 
         public TableVM(IClass1DataSource dataSource, TableOrViewMetadata<TName, TDbType> table) : base(dataSource)
         {
@@ -23,6 +23,9 @@ namespace Tortuga.Drydock.Models
             PopulateColumns();
 
             UpdateSuggestions();
+
+            FixItOperations.Add(new FixDropTable<TName, TDbType>(this));
+
         }
 
         public ICommand AnalyzeColumnsCommand
@@ -31,6 +34,8 @@ namespace Tortuga.Drydock.Models
         }
 
         public ColumnCollection<TDbType> Columns { get => GetNew<ColumnCollection<TDbType>>(); }
+        public override string FullName => Table.Name.ToString();
+
         public bool? IsHeap
         {
             get => GetDefault<bool?>(null);
@@ -43,6 +48,7 @@ namespace Tortuga.Drydock.Models
 
 
 
+        public ICommand ShowTopTenCommand => GetCommand<ColumnModel<TDbType>>(async t => await ShowTopTenAsync(t));
         public bool SuggestPrimaryKeyButton { get => Get<bool>(); private set => Set(value); }
 
         public ICommand SuggestPrimaryKeyCommand => GetCommand(async () => await SuggestPrimaryKeyAsync());
@@ -50,7 +56,26 @@ namespace Tortuga.Drydock.Models
         public TableOrViewMetadata<TName, TDbType> Table { get; }
 
 
+        public virtual string WindowTitle => "Table: " + Table.Name.ToString();
+
+        public async Task SuggestPrimaryKeyAsync()
+        {
+            StartWork();
+
+            await AnalyzeColumnsAsync();
+
+            foreach (var column in Columns.Where(c => c.IsUnique == true && (c.NullCount ?? 0) == 0))
+                column.IsPrimaryKeyCandidate = true;
+
+            SuggestPrimaryKeyButton = false;
+
+            StopWork();
+
+        }
+
         protected abstract Task AnalyzeColumnAsync(ColumnModel<TDbType> column);
+
+        protected abstract Task<DataTable> OnShowTopTenAsync(ColumnModel<TDbType> column);
 
         protected virtual void PopulateColumns()
         {
@@ -58,13 +83,6 @@ namespace Tortuga.Drydock.Models
         }
 
 
-
-        void UpdateSuggestions()
-        {
-            SuggestPrimaryKeyButton = (IsHeap == true) && !Columns.Any(c => c.IsPrimaryKey || c.IsPrimaryKeyCandidate);
-        }
-
-        public virtual string WindowTitle => "Table: " + Table.Name.ToString();
 
         async Task AnalyzeColumnsAsync()
         {
@@ -96,28 +114,6 @@ namespace Tortuga.Drydock.Models
 
         }
 
-        public async Task SuggestPrimaryKeyAsync()
-        {
-            StartWork();
-
-            await AnalyzeColumnsAsync();
-
-            foreach (var column in Columns.Where(c => c.IsUnique == true && (c.NullCount ?? 0) == 0))
-                column.IsPrimaryKeyCandidate = true;
-
-            SuggestPrimaryKeyButton = false;
-
-            StopWork();
-
-        }
-
-        public override string FullName => Table.Name.ToString();
-
-        public ICommand ShowTopTenCommand => GetCommand<ColumnModel<TDbType>>(async t => await ShowTopTenAsync(t));
-
-
-        protected abstract Task<DataTable> OnShowTopTenAsync(ColumnModel<TDbType> column);
-
         async Task ShowTopTenAsync(ColumnModel<TDbType> column)
         {
             //The database-specific OnShowTopTenAsync will eventually be replaced by Chain's Aggregate functionality
@@ -131,6 +127,10 @@ namespace Tortuga.Drydock.Models
             RequestDialog(model);
         }
 
+        void UpdateSuggestions()
+        {
+            SuggestPrimaryKeyButton = (IsHeap == true) && !Columns.Any(c => c.IsPrimaryKey || c.IsPrimaryKeyCandidate);
+        }
     }
 }
 

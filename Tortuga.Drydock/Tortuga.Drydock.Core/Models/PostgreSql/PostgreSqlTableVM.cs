@@ -15,6 +15,7 @@ namespace Tortuga.Drydock.Models.PostgreSql
             FixItOperations.Add(new FixNulls(this));
         }
 
+        public override string QuotedTableName => Table.Name.ToQuotedString();
         protected override Task AnalyzeColumnAsync(ColumnModel<NpgsqlDbType> column)
         {
             throw new NotImplementedException("Task-12 implement analyze columns");

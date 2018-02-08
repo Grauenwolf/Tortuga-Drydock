@@ -121,6 +121,7 @@
     <Compile Include="Models\DatabaseVM.cs" />
     <Compile Include="Models\DialogRequestedEventArgs.cs" />
     <Compile Include="Models\FixItVM.cs" />
+    <Compile Include="Models\FixDropTable`2.cs" />
     <Compile Include="Models\PostgreSql\FixNulls.cs" />
     <Compile Include="Models\PostgreSql\PostgreSqlTableVM.cs" />
     <Compile Include="Models\SQLite\SQLiteTableVM.cs" />

@@ -13,6 +13,7 @@ namespace Tortuga.Drydock.Models.SQLite
         {
 
         }
+        public override string QuotedTableName => Table.Name.ToQuotedString();
 
         protected override Task AnalyzeColumnAsync(ColumnModel<DbType> column)
         {

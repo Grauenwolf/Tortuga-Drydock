@@ -18,6 +18,8 @@ namespace Tortuga.Drydock.Models.SqlServer
             FixItOperations.Add(new FixObsoleteTypes(this));
         }
 
+        public override string QuotedTableName => Table.Name.ToQuotedString();
+
         public new SqlServerDataSource DataSource { get => (SqlServerDataSource)base.DataSource; }
 
         public long ObjectId { get => Get<long>(); set => Set(value); }

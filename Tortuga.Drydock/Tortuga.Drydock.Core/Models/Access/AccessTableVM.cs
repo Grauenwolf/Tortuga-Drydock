@@ -15,6 +15,8 @@ namespace Tortuga.Drydock.Models.Access
 
         }
 
+        public override string QuotedTableName => Table.Name.ToQuotedString();
+
         protected override Task AnalyzeColumnAsync(ColumnModel<OleDbType> column)
         {
             throw new NotImplementedException("Task-12 implement analyze columns");
