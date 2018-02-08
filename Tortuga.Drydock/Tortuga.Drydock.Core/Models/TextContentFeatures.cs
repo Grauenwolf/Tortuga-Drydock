@@ -12,6 +12,7 @@ namespace Tortuga.Drydock.Models
         DateTime = 8,
         Integer = 16,
         Decimal = 32,
+        Boolean = 64,
         //NonAsciiCharacters = 64
     }
 }

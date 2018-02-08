@@ -37,6 +37,8 @@ namespace Tortuga.Drydock.Models.SqlServer
                 column.FixItOperations.Add(new FixEmailCheckConstraint(this, column));
                 column.FixItOperations.Add(new FixDomainUserNameCheckConstraint(this, column));
                 column.FixItOperations.Add(new FixNotEmptyCheckConstraint(this, column));
+                column.FixItOperations.Add(new FixBooleanAsText(this, column));
+                column.FixItOperations.Add(new FixUnusedColumn(this, column));
             }
         }
 
@@ -113,9 +115,10 @@ WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
                         bool isDomainUserName = true;
                         bool isFile = true;
                         bool isInteger = true;
+                        bool isBoolean = true;
                         bool isDecimal = true;
                         bool nonNullFound = false;
-                        long maxLong = long.MinValue;
+                        long maxLong = long.MinValue; //TODO: Fixit will determine the best data type
 
                         var i = 0;
 
@@ -141,6 +144,8 @@ WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
 
                                 isDecimal = isDecimal && float.TryParse(value, out var _);
 
+                                isBoolean = isBoolean && IsBoolean(value);
+
                             }
                             i += 1;
 
@@ -161,7 +166,8 @@ WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
                                 column.TextContentFeatures = column.TextContentFeatures | TextContentFeatures.Integer;
                             else if (isDecimal)
                                 column.TextContentFeatures = column.TextContentFeatures | TextContentFeatures.Decimal;
-
+                            if (isBoolean)
+                                column.TextContentFeatures = column.TextContentFeatures | TextContentFeatures.Boolean;
                         }
                     }
                 }
@@ -185,6 +191,26 @@ WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
 
 
 
+        }
+
+        private static bool IsBoolean(string value)
+        {
+            switch (value.ToUpperInvariant())
+            {
+                case "1":
+                case "0":
+                case "TRUE":
+                case "FALSE":
+                case "T":
+                case "F":
+                case "Y":
+                case "YES":
+                case "N":
+                case "NO":
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         static bool IsFileName(string path)

@@ -135,12 +135,14 @@
     <Compile Include="Models\PostgreSql\PostgreSqlTableVM.cs" />
     <Compile Include="Models\SQLite\SQLiteTableVM.cs" />
     <Compile Include="Models\SqlServer\FixAddIdentityColumn.cs" />
+    <Compile Include="Models\SqlServer\FixBooleanAsText.cs" />
     <Compile Include="Models\SqlServer\FixDomainUserNameCheckConstraint.cs" />
     <Compile Include="Models\SqlServer\FixEmailCheckConstraint.cs" />
     <Compile Include="Models\SqlServer\FixNotEmptyCheckConstraint.cs" />
     <Compile Include="Models\SqlServer\FixNulls.cs" />
     <Compile Include="Models\SqlServer\FixObsoleteTypes.cs" />
     <Compile Include="Models\SqlServer\FixSparse.cs" />
+    <Compile Include="Models\SqlServer\FixUnusedColumn.cs" />
     <Compile Include="Models\SqlServer\SqlServerColumnModel.cs" />
     <Compile Include="Models\SqlServer\SqlServerTableVM.cs" />
     <Compile Include="Models\TableVM`2.cs" />

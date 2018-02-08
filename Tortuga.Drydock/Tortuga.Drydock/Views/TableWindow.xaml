@@ -443,7 +443,7 @@
                                         </ItemsControl.ItemTemplate>
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
-                                                <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                                <StackPanel Orientation="Vertical" IsItemsHost="True"/>
                                             </ItemsPanelTemplate>
                                         </ItemsControl.ItemsPanel>
                                     </ItemsControl>

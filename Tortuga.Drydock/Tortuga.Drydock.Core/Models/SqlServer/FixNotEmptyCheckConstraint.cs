@@ -31,7 +31,7 @@ namespace Tortuga.Drydock.Models.SqlServer
 
         protected override bool OnRefresh()
         {
-            return Column.EmptyCount == 0 && Column.HasCheckConstraint == false;
+            return Column.EmptyCount == 0 && Column.HasCheckConstraint == false && (Column.NullRate == null || Column.NullRate < 1);
         }
     }
 }
