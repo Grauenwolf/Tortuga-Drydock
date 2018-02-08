@@ -20,7 +20,7 @@ namespace Tortuga.Drydock.Models.SQLite
             throw new NotImplementedException("Task-12 implement analyze columns");
         }
 
-        protected override Task<DataTable> OnShowTopTenAsync(ColumnModel<DbType> column)
+        protected override Task<DataTable> OnShowTopTenAsync(ColumnModel<DbType> column, int rowCount)
         {
             throw new NotImplementedException();
         }

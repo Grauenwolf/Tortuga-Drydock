@@ -12,7 +12,7 @@ namespace Tortuga.Drydock.Models
     public abstract class TableVM<TName, TDbType> : TableVM
         where TDbType : struct
     {
-        public abstract string QuotedTableName { get; }
+
 
         public TableVM(IClass1DataSource dataSource, TableOrViewMetadata<TName, TDbType> table) : base(dataSource)
         {
@@ -36,15 +36,7 @@ namespace Tortuga.Drydock.Models
         public ColumnCollection<TDbType> Columns { get => GetNew<ColumnCollection<TDbType>>(); }
         public override string FullName => Table.Name.ToString();
 
-        public bool? IsHeap
-        {
-            get => GetDefault<bool?>(null);
-            set
-            {
-                if (Set(value))
-                    UpdateSuggestions();
-            }
-        }
+
 
 
 
@@ -75,7 +67,7 @@ namespace Tortuga.Drydock.Models
 
         protected abstract Task AnalyzeColumnAsync(ColumnModel<TDbType> column);
 
-        protected abstract Task<DataTable> OnShowTopTenAsync(ColumnModel<TDbType> column);
+        protected abstract Task<DataTable> OnShowTopTenAsync(ColumnModel<TDbType> column, int rowCount);
 
         protected virtual void PopulateColumns()
         {
@@ -121,13 +113,13 @@ namespace Tortuga.Drydock.Models
 
             var model = new DataVM()
             {
-                Data = await OnShowTopTenAsync(column),
+                Data = await OnShowTopTenAsync(column, 10),
                 WindowTitle = $"Top 10 values for {Table.Name}.{column.Column.SqlName}"
             };
             RequestDialog(model);
         }
 
-        void UpdateSuggestions()
+        protected sealed override void UpdateSuggestions()
         {
             SuggestPrimaryKeyButton = (IsHeap == true) && !Columns.Any(c => c.IsPrimaryKey || c.IsPrimaryKeyCandidate);
         }

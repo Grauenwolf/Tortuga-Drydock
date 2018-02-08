@@ -25,7 +25,6 @@ namespace Tortuga.Drydock.Models
             item.TableVM = TableVM;
         }
 
-
     }
 }
 

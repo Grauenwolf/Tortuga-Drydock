@@ -21,7 +21,7 @@ namespace Tortuga.Drydock.Models.Access
         {
             throw new NotImplementedException("Task-12 implement analyze columns");
         }
-        protected override Task<DataTable> OnShowTopTenAsync(ColumnModel<OleDbType> column)
+        protected override Task<DataTable> OnShowTopTenAsync(ColumnModel<OleDbType> column, int rowCount)
         {
             throw new NotImplementedException();
         }

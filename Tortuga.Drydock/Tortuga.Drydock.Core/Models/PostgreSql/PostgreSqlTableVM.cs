@@ -21,7 +21,7 @@ namespace Tortuga.Drydock.Models.PostgreSql
             throw new NotImplementedException("Task-12 implement analyze columns");
         }
 
-        protected override Task<DataTable> OnShowTopTenAsync(ColumnModel<NpgsqlDbType> column)
+        protected override Task<DataTable> OnShowTopTenAsync(ColumnModel<NpgsqlDbType> column, int rowCount)
         {
             throw new NotImplementedException();
         }

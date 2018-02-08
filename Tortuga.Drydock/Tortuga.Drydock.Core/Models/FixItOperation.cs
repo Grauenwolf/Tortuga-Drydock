@@ -5,11 +5,11 @@ namespace Tortuga.Drydock.Models
 {
     public abstract class FixItOperation : ViewModelBaseImproved
     {
-        private readonly TableVM m_TableVM;
+        protected TableVM TableVM { get; }
 
         protected FixItOperation(TableVM tableVM)
         {
-            m_TableVM = tableVM;
+            TableVM = tableVM;
         }
 
         public ICommand FixItCommand => GetCommand(FixIt);
@@ -19,7 +19,7 @@ namespace Tortuga.Drydock.Models
         public void Refresh() => ShowFixIt = OnRefresh();
         protected abstract bool OnRefresh();
 
-        void FixIt() => m_TableVM.RequestDialog(OnFixIt());
+        void FixIt() => TableVM.RequestDialog(OnFixIt());
 
         protected abstract FixItVM OnFixIt();
 

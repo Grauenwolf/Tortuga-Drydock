@@ -4,32 +4,20 @@ using Tortuga.Chain.Metadata;
 namespace Tortuga.Drydock.Models
 {
     public class ColumnModel<TDbType> : ModelBase
-        where TDbType : struct
+            where TDbType : struct
     {
-
         public ColumnModel(ColumnMetadata<TDbType> column)
         {
             Column = column;
             NormalizedTypeName = column.TypeName.ToLowerInvariant();
         }
 
-        public string Name { get => Column.SqlName; }
-        public string TypeName { get => Column.TypeName; }
-
-        public int? MaxLength { get => Column.MaxLength; }
-        public int? Precision { get => Column.Precision; }
-        public int? Scale { get => Column.Scale; }
-        public bool IsIdentity { get => Column.IsIdentity; }
-        public bool IsComputed { get => Column.IsComputed; }
-        public bool IsNullable { get => Column.IsNullable; }
-        public bool IsPrimaryKey { get => Column.IsPrimaryKey; }
-
-
         public int? ActualMaxLength { get => Get<int?>(); set => Set(value); }
         public decimal? AverageLength { get { return Get<decimal?>(); } set { Set(value); } }
+        [CalculatedField("HasCheckConstraint")]
+        public string CheckConstraint { get => Get<string>(); set => Set(value); }
+
         public ColumnMetadata<TDbType> Column { get; }
-
-
         /// <summary>
         /// Indicates that this is a text column.
         /// </summary>
@@ -64,6 +52,9 @@ namespace Tortuga.Drydock.Models
             }
         }
 
+        [CalculatedField("HasDefault")]
+        public string Default { get => Get<string>(); set => Set(value); }
+
         public int? DistinctCount { get => Get<int?>(); set => Set(value); }
         [CalculatedField("DistinctCount,SampleSize")]
         public double? DistinctRate
@@ -78,13 +69,53 @@ namespace Tortuga.Drydock.Models
             get { return SampleSize > 0 && EmptyCount.HasValue ? (double?)EmptyCount / (double)SampleSize.Value : null; }
         }
 
+        public FixItColumnOperationCollection<TDbType> FixItOperations => GetNew<FixItColumnOperationCollection<TDbType>>();
+
+        public bool? HasCheckConstraint
+        {
+            get
+            {
+                switch (CheckConstraint)
+                {
+                    case "":
+                        return false;
+                    case null:
+                        return null;
+                    default:
+                        return true;
+                }
+            }
+        }
+
+        public bool? HasDefault
+        {
+            get
+            {
+                switch (Default)
+                {
+                    case "":
+                        return false;
+                    case null:
+                        return null;
+                    default:
+                        return true;
+                }
+            }
+        }
+
+        public bool IsComputed { get => Column.IsComputed; }
+        public bool IsIdentity { get => Column.IsIdentity; }
         public bool? IsIndexed { get => Get<bool?>(); set => Set(value); }
+        public bool IsNullable { get => Column.IsNullable; }
         [CalculatedField("ObsoleteMessage")]
         public bool IsObsolete { get => ObsoleteMessage != null; }
 
+        public bool IsPrimaryKey { get => Column.IsPrimaryKey; }
         public bool IsPrimaryKeyCandidate { get => Get<bool>(); set => Set(value); }
         public bool? IsUnique { get => Get<bool?>(); set => Set(value); }
         public bool? IsUniqueIndex { get => Get<bool?>(); set => Set(value); }
+        public int? MaxLength { get => Column.MaxLength; }
+        public string Name { get => Column.SqlName; }
         [CalculatedField("DistinctCount,SampleSize")]
         public bool? NoDistinctValues
         {
@@ -103,13 +134,13 @@ namespace Tortuga.Drydock.Models
             get { return SampleSize > 0 && NullCount.HasValue ? (double?)NullCount / (double)SampleSize.Value : null; }
         }
 
-
         public virtual string ObsoleteMessage { get => null; }
         public virtual string ObsoleteReplaceType { get => null; }
-
+        public int? Precision { get => Column.Precision; }
         public int? SampleSize { get => Get<int?>(); set => Set(value); }
+        public int? Scale { get => Column.Scale; }
+        public int SortIndex { get => Get<int>(); set => Set(value); }
         public bool StatsLoaded { get => Get<bool>(); set => Set(value); }
-
         /// <summary>
         /// Gets a value indicating whether this column supports the distinct operator.
         /// </summary>
@@ -158,7 +189,8 @@ namespace Tortuga.Drydock.Models
             }
         }
 
-
+        public TextContentFeatures? TextContentFeatures { get => Get<TextContentFeatures?>(); set => Set(value); }
+        public string TypeName { get => Column.TypeName; }
         public virtual bool UseMaxLength { get => Column.MaxLength.HasValue; }
 
 

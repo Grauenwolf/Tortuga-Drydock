@@ -148,6 +148,7 @@ ORDER BY S.name,
                         table.IndexCount = tableData.IndexCount;
                         table.IsHeap = tableData.IsHeap;
                         table.FixItOperations.RefreshAll();
+                        table.SortIndex = tableData.SortIndex;
                         break;
                     }
                 }
@@ -167,6 +168,7 @@ ORDER BY S.name,
             public int IndexCount { get; set; }
             public long ObjectId { get; set; }
             public long RowCount { get; set; }
+            public int SortIndex { get; set; }
         }
     }
 

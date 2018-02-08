@@ -67,10 +67,10 @@
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
 
-                    
 
-                    
-                    
+
+
+
                     <!--
 
                     Task-19
@@ -398,19 +398,61 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
+                    <DataGridTemplateColumn Header="Text Features"
+											SortMemberPath="TextContentFeatures">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding TextContentFeatures}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Is Constrained" SortMemberPath="HasCheckConstraint">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock
+                                    Text="Check Constraint"
+                                    TextAlignment="Center"
+                                    Visibility="{Binding HasCheckConstraint, Converter={StaticResource TrueToVisibleConverter}}"
+                                    ToolTip="{Binding CheckConstraint}"
+                                    />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
                     <DataGridTemplateColumn Header=""
 											SortMemberPath="SortIndex">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Show Top 10"
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Show Top 10"
+                                    
                                         ToolTip="Show the ten most frequently occuring values from the sampled data set."
 										Command="{Binding DataContext.ShowTopTenCommand, ElementName=Root}"
 										CommandParameter="{Binding}" />
+
+                                    <ItemsControl ItemsSource="{Binding FixItOperations}" IsEnabled="{Binding Idle}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Button Content="{Binding Title}" 
+                                                        Command="{Binding FixItCommand}"                        
+                                                        Style="{StaticResource FixItButton}"					
+                                                        ToolTip="{Binding ToolTip}"
+							                            Visibility="{Binding ShowFixIt, Converter={StaticResource TrueToVisibleConverter}}" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    
-                    
+
+
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>
