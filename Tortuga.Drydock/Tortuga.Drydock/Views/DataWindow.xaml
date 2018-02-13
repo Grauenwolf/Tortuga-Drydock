@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tortuga.Drydock.Views"
         mc:Ignorable="d"
+        KeyUp="Window_KeyUp"
+        
         Title="{Binding WindowTitle}" Height="600" Width="800">
     <DataGrid ItemsSource="{Binding Data.DefaultView}" IsReadOnly="True" AutoGenerateColumns="True" AutoGeneratingColumn="OnAutoGeneratingColumn">
 

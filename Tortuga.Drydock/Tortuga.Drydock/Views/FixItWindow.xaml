@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tortuga.Drydock.Views"
         mc:Ignorable="d"
+        KeyUp="Window_KeyUp"
  Title="{Binding WindowTitle}" Height="600" Width="800">
     <ScrollViewer>
         <StackPanel>
@@ -17,7 +18,18 @@
                 </GroupBox.Header>
                 <TextBox TextWrapping="Wrap" Text="{Binding VerificationSql}" IsReadOnly="True"/>
             </GroupBox>
-            <GroupBox DockPanel.Dock="Top" >
+
+            <GroupBox DockPanel.Dock="Top" Visibility="{Binding CreateSql,Converter={StaticResource NotNullToVisibleConverter}}">
+                <GroupBox.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Creation SQL" VerticalAlignment="Center" />
+                        <Button Command="{Binding CopyCreateSqlCommand}" Content="Copy" />
+                    </StackPanel>
+                </GroupBox.Header>
+                <TextBox TextWrapping="Wrap" Text="{Binding CreateSql}" IsReadOnly="True"/>
+            </GroupBox>
+            
+            <GroupBox DockPanel.Dock="Top" Visibility="{Binding ChangeSql,Converter={StaticResource NotNullToVisibleConverter}}">
                 <GroupBox.Header>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Change SQL" VerticalAlignment="Center" />
@@ -26,7 +38,8 @@
                 </GroupBox.Header>
                 <TextBox TextWrapping="Wrap" Text="{Binding ChangeSql}" IsReadOnly="True"/>
             </GroupBox>
-            <GroupBox DockPanel.Dock="Top" >
+            
+            <GroupBox DockPanel.Dock="Top" Visibility="{Binding RollBackSql,Converter={StaticResource NotNullToVisibleConverter}}">
                 <GroupBox.Header>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Roll Back SQL" VerticalAlignment="Center" />

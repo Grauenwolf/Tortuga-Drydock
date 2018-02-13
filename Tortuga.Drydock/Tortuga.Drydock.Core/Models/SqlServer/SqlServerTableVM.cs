@@ -38,6 +38,8 @@ namespace Tortuga.Drydock.Models.SqlServer
                 column.FixItOperations.Add(new FixDomainUserNameCheckConstraint(this, column));
                 column.FixItOperations.Add(new FixNotEmptyCheckConstraint(this, column));
                 column.FixItOperations.Add(new FixBooleanAsText(this, column));
+                column.FixItOperations.Add(new FixIntegerAsText(this, column));
+                column.FixItOperations.Add(new FixDecimalAsText(this, column));
                 column.FixItOperations.Add(new FixUnusedColumn(this, column));
             }
         }
@@ -91,17 +93,62 @@ namespace Tortuga.Drydock.Models.SqlServer
                 }
 
 
-                var constraintSql = @"SELECT 
+                const string constraintSql = @"SELECT 
 cc.name AS ConstraintName,
-cc.definition AS [Constraint]
+cc.definition AS [Definition],
+2 AS ConstraintType
  FROM Sys.check_constraints cc
 INNER JOIN sys.columns c ON cc.parent_object_id = c.object_id AND cc.parent_column_id = c.column_id
 INNER JOIN sys.tables t ON c.object_id = t.object_id
 INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
 WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
 
-                column.CheckConstraint = string.Join(Environment.NewLine, await DataSource.Sql(constraintSql, new { Name = Table.Name.Name, Schema = Table.Name.Schema, Column = column.Column.SqlName }).ToStringList(ListOptions.FlattenExtraColumns | ListOptions.DiscardNulls).ExecuteAsync());
+                column.Constraints.AddRange(await DataSource.Sql(constraintSql, new { Table.Name.Name, Table.Name.Schema, Column = column.Column.SqlName }).ToCollection<Constraint>().ExecuteAsync());
 
+
+                const string fkSql = @"SELECT s2.name + '.' + t2.name + '(' + c2.name + ')' AS Definition,
+       fk.name AS ConstraintName,
+       1 AS ConstraintType,
+       s2.name AS ReferencedSchemaName,
+       t2.name AS ReferencedTableName,
+       c2.name AS ReferencedColumnName
+FROM sys.foreign_key_columns fkc
+    INNER JOIN sys.tables t
+        ON fkc.parent_object_id = t.object_id
+    INNER JOIN sys.columns c
+        ON c.column_id = fkc.parent_column_id
+           AND c.object_id = fkc.parent_object_id
+    INNER JOIN sys.schemas s
+        ON s.schema_id = t.schema_id
+    INNER JOIN sys.tables t2
+        ON fkc.referenced_object_id = t2.object_id
+    INNER JOIN sys.columns c2
+        ON c2.column_id = fkc.referenced_column_id
+           AND c2.object_id = fkc.referenced_object_id
+    INNER JOIN sys.schemas s2
+        ON s2.schema_id = t2.schema_id
+    INNER JOIN sys.foreign_keys fk
+        ON fk.object_id = fkc.constraint_object_id
+WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
+
+                column.Constraints.AddRange(await DataSource.Sql(fkSql, new { Table.Name.Name, Table.Name.Schema, Column = column.Column.SqlName }).ToCollection<Constraint>().ExecuteAsync());
+
+                const string dcSql = @"SELECT dc.name AS ConstraintName,
+       0 AS ConstraintType,
+       dc.definition AS Definition
+FROM sys.default_constraints dc
+    INNER JOIN sys.columns c
+        ON c.column_id = dc.parent_column_id
+           AND c.object_id = dc.parent_object_id
+    INNER JOIN sys.tables t
+        ON dc.parent_object_id = t.object_id
+    INNER JOIN sys.schemas s
+        ON s.schema_id = t.schema_id
+WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
+
+                column.Constraints.AddRange(await DataSource.Sql(dcSql, new { Table.Name.Name, Table.Name.Schema, Column = column.Column.SqlName }).ToCollection<Constraint>().ExecuteAsync());
+
+                column.ConstraintsLoaded = true;
 
                 if (column.ContainsText && column.ActualMaxLength < 300)
                 {
@@ -188,9 +235,6 @@ WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
                 StopWork();
 
             }
-
-
-
         }
 
         private static bool IsBoolean(string value)

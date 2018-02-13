@@ -7,9 +7,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:Tortuga.Drydock.Views"
     xmlns:sails="clr-namespace:Tortuga.Sails;assembly=Tortuga.Drydock.Core"
+    xmlns:Controls="clr-namespace:Tortuga.Drydock.Controls" 
     Height="400"
     Width="900"
     mc:Ignorable="d"
+    KeyUp="Window_KeyUp"
     Title="{Binding WindowTitle}">
 
     <Window.Resources>
@@ -113,349 +115,379 @@
                 </StackPanel>
             </StackPanel>
         </GroupBox>
-        <GroupBox DockPanel.Dock="Top" Header="Columns">
-            <DataGrid
+        <TabControl >
+            <TabItem Header="Columns">
+                <DataGrid
                 AutoGenerateColumns="False"
                 IsReadOnly="True"
                 ItemsSource="{Binding Columns}">
-                <DataGrid.Resources>
-                    <sails:BindingProxy x:Key="proxy" Data="{Binding}" />
-                </DataGrid.Resources>
-                <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding Name}" Header="Name" />
-                    <DataGridTemplateColumn Header="Type" SortMemberPath="TypeName">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding TypeName}" TextAlignment="Center" />
-                                    <TextBlock
+                    <DataGrid.Resources>
+                        <sails:BindingProxy x:Key="proxy" Data="{Binding}" />
+                    </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Name}" Header="Name" />
+                        <DataGridTemplateColumn Header="Type" SortMemberPath="TypeName">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding TypeName}" TextAlignment="Center" />
+                                        <TextBlock
                                         FontWeight="Bold"
                                         Foreground="Red"
                                         Text="Obsolete Type"
                                         TextAlignment="Center"
                                         ToolTip="{Binding ObsoleteMessage}"
                                         Visibility="{Binding IsObsolete, Converter={StaticResource TrueToVisibleConverter}}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="MaxLength" SortMemberPath="MaxLength">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="MaxLength" SortMemberPath="MaxLength">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock
                                     Text="{Binding MaxLength}"
                                     TextAlignment="Center"
                                     Visibility="{Binding UseMaxLength, Converter={StaticResource TrueToVisibleConverter}}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Precision" SortMemberPath="Precision">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Precision" SortMemberPath="Precision">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock
                                     Text="{Binding Precision}"
                                     TextAlignment="Center"
                                     Visibility="{Binding UsePrecision, Converter={StaticResource TrueToVisibleConverter}}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Scale" SortMemberPath="Scale">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Scale" SortMemberPath="Scale">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock
                                     Text="{Binding Scale}"
                                     TextAlignment="Center"
                                     Visibility="{Binding UseScale, Converter={StaticResource TrueToVisibleConverter}}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Is Nullable" SortMemberPath="IsNullable">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Is Nullable" SortMemberPath="IsNullable">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock
                                     Text="Nullable"
                                     TextAlignment="Center"
                                     Visibility="{Binding IsNullable, Converter={StaticResource TrueToVisibleConverter}}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Is Identity" SortMemberPath="IsIdentity">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Is Identity" SortMemberPath="IsIdentity">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock
                                     Text="Identity"
                                     TextAlignment="Center"
                                     Visibility="{Binding IsIdentity, Converter={StaticResource TrueToVisibleConverter}}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <!-- Task-4: Add Tooltip showing the formula for the computed column. -->
-                    <DataGridTemplateColumn Header="Is Computed" SortMemberPath="IsComputed">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <!-- Task-4: Add Tooltip showing the formula for the computed column. -->
+                        <DataGridTemplateColumn Header="Is Computed" SortMemberPath="IsComputed">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock
                                     Text="Computed"
                                     TextAlignment="Center"
                                     Visibility="{Binding IsComputed, Converter={StaticResource TrueToVisibleConverter}}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn
                         Header="Distinct Rate"
                         SortMemberPath="DistinctRate"
                         Visibility="{Binding Data.SupportsIndexes, Converter={StaticResource TrueToVisibleConverter}, Source={StaticResource proxy}}">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock
                                         Text="Indexed"
                                         TextAlignment="Center"
                                         ToolTip="Uniqueness is enforced by an index."
                                         Visibility="{Binding IsUniqueIndex, Converter={StaticResource TrueToVisibleConverter}}" />
-                                    <StackPanel Visibility="{Binding IsUniqueIndex, Converter={StaticResource FalseToVisibleConverter}}">
-                                        <TextBlock
+                                        <StackPanel Visibility="{Binding IsUniqueIndex, Converter={StaticResource FalseToVisibleConverter}}">
+                                            <TextBlock
                                             FontWeight="Bold"
                                             Foreground="Green"
                                             Text="Unique"
                                             TextAlignment="Center"
                                             Visibility="{Binding IsUnique, Converter={StaticResource TrueToVisibleConverter}}" />
-                                        <!-- Task-5: Button to create Unique index. -->
-                                        <Border Visibility="{Binding IsUnique, Converter={StaticResource FalseToVisibleConverter}}">
-                                            <Border Visibility="{Binding NoDistinctValues, Converter={StaticResource FalseToVisibleConverter}}">
-                                                <TextBlock
+                                            <!-- Task-5: Button to create Unique index. -->
+                                            <Border Visibility="{Binding IsUnique, Converter={StaticResource FalseToVisibleConverter}}">
+                                                <Border Visibility="{Binding NoDistinctValues, Converter={StaticResource FalseToVisibleConverter}}">
+                                                    <TextBlock
                                                     Text="{Binding DistinctRate, StringFormat=P2}"
                                                     TextAlignment="Right"
                                                     Visibility="{Binding DistinctRate, Converter={StaticResource NotNullToVisibleConverter}}" />
+                                                </Border>
                                             </Border>
-                                        </Border>
-                                        <TextBlock
+                                            <TextBlock
                                             FontWeight="Bold"
                                             Foreground="Red"
                                             Text="No Distinct Values"
                                             TextAlignment="Center"
                                             ToolTip="Every row contains the same value"
                                             Visibility="{Binding NoDistinctValues, Converter={StaticResource TrueToVisibleConverter}}" />
-                                        <!-- Task-6: Button to drop column -->
+                                        </StackPanel>
                                     </StackPanel>
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn
                         Header="Distinct Rate"
                         SortMemberPath="DistinctRate"
                         Visibility="{Binding Data.SupportsIndexes, Converter={StaticResource FalseToVisibleConverter}, Source={StaticResource proxy}}">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock
                                         FontWeight="Bold"
                                         Foreground="Green"
                                         Text="Unique"
                                         TextAlignment="Center"
                                         Visibility="{Binding IsUnique, Converter={StaticResource TrueToVisibleConverter}}" />
-                                    <Border Visibility="{Binding IsUnique, Converter={StaticResource FalseToVisibleConverter}}">
-                                        <Border Visibility="{Binding NoDistinctValues, Converter={StaticResource FalseToVisibleConverter}}">
-                                            <TextBlock
+                                        <Border Visibility="{Binding IsUnique, Converter={StaticResource FalseToVisibleConverter}}">
+                                            <Border Visibility="{Binding NoDistinctValues, Converter={StaticResource FalseToVisibleConverter}}">
+                                                <TextBlock
                                                 Text="{Binding DistinctRate, StringFormat=P2}"
                                                 TextAlignment="Right"
                                                 Visibility="{Binding DistinctRate, Converter={StaticResource NotNullToVisibleConverter}}" />
+                                            </Border>
                                         </Border>
-                                    </Border>
-                                    <TextBlock
+                                        <TextBlock
                                         FontWeight="Bold"
                                         Foreground="Red"
                                         Text="No Distinct Values"
                                         TextAlignment="Center"
                                         ToolTip="Every row contains the same value"
                                         Visibility="{Binding NoDistinctValues, Converter={StaticResource TrueToVisibleConverter}}" />
-                                    <!-- Task-6: Button to drop column -->
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Null Rate" SortMemberPath="NullRate">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <Border Visibility="{Binding NullRate, Converter={StaticResource NullToVisibleConverter}}">
-                                        <TextBlock
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Null Rate" SortMemberPath="NullRate">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Border Visibility="{Binding NullRate, Converter={StaticResource NullToVisibleConverter}}">
+                                            <TextBlock
                                             Text="Nullable"
                                             TextAlignment="Center"
                                             Visibility="{Binding IsNullable, Converter={StaticResource TrueToVisibleConverter}}" />
-                                    </Border>
-                                    <!-- Task-7: Add warning when NullRate is 100% -->
-                                    <Border Visibility="{Binding NullCount, Converter={StaticResource NotZeroToVisibleConverter}}">
-                                        <TextBlock
+                                        </Border>
+                                        <Border Visibility="{Binding AlwaysNull, Converter={StaticResource FalseToVisibleConverter}}">
+                                            <Border Visibility="{Binding NullCount, Converter={StaticResource NotZeroToVisibleConverter}}">
+                                                <TextBlock
                                             Text="{Binding NullRate, StringFormat=P2}"
                                             TextAlignment="Right"
                                             Visibility="{Binding NullRate, Converter={StaticResource NotNullToVisibleConverter}}" />
-                                    </Border>
-                                    <TextBlock
+                                            </Border>
+                                        </Border>
+
+                                        <TextBlock
+                                        FontWeight="Bold"
+                                        Foreground="Red"
+                                        Text="All Nulls"
+                                        TextAlignment="Center"
+                                        ToolTip="Column only contains nulls"
+                                        Visibility="{Binding AlwaysNull, Converter={StaticResource TrueToVisibleConverter}}" />
+
+                                        <TextBlock
                                         FontWeight="Bold"
                                         Foreground="Red"
                                         Text="No Nulls"
                                         TextAlignment="Center"
                                         ToolTip="Nullable column that contains no null values"
                                         Visibility="{Binding NullCount, Converter={StaticResource ZeroToVisibleConverter}}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Empty Rate" SortMemberPath="EmptyRate">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Empty Rate" SortMemberPath="EmptyRate">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock
                                         Text="{Binding EmptyRate, StringFormat=P0}"
                                         TextAlignment="Right"
                                         ToolTip="This indicates the number of rows that contain empty strings."
                                         Visibility="{Binding EmptyRate, Converter={StaticResource NotNullToVisibleConverter}}" />
-                                    <!-- Task-8: Warning if all rows are empty. -->
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Average Length" SortMemberPath="AverageLength">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock
+                                        <!-- Task-8: Warning if all rows are empty. -->
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Average Length" SortMemberPath="AverageLength">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock
                                         Text="{Binding AverageLength, StringFormat=N2}"
                                         TextAlignment="Right"
                                         Visibility="{Binding AverageLength, Converter={StaticResource NotNullToVisibleConverter}}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Actual Max Length" SortMemberPath="ActualMaxLength">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Actual Max Length" SortMemberPath="ActualMaxLength">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock
                                         Text="{Binding ActualMaxLength, StringFormat=N0}"
                                         TextAlignment="Right"
                                         Visibility="{Binding ActualMaxLength, Converter={StaticResource NotNullToVisibleConverter}}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn
                         Header="Is Indexed"
                         SortMemberPath="IsIndexed"
                         Visibility="{Binding Data.SupportsIndexes, Converter={StaticResource TrueToVisibleConverter}, Source={StaticResource proxy}}">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock
                                     Text="Indexed"
                                     TextAlignment="Center"
                                     Visibility="{Binding IsIndexed, Converter={StaticResource TrueToVisibleConverter}}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Is PrimaryKey" SortMemberPath="IsPrimaryKey">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Is PrimaryKey" SortMemberPath="IsPrimaryKey">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock
                                         Text="Primary Key"
                                         TextAlignment="Center"
                                         Visibility="{Binding IsPrimaryKey, Converter={StaticResource TrueToVisibleConverter}}" />
-                                    <TextBlock
+                                        <TextBlock
                                         FontWeight="Bold"
                                         Foreground="Green"
                                         Text="Candidate"
                                         TextAlignment="Center"
                                         ToolTip="Based on distinct row analysis, this column could be a primary key."
                                         Visibility="{Binding IsPrimaryKeyCandidate, Converter={StaticResource TrueToVisibleConverter}}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Is Sparse" Visibility="{Binding Data.SupportsSparse, Converter={StaticResource TrueToVisibleConverter}, Source={StaticResource proxy}}">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <StackPanel Visibility="{Binding IsSparse, Converter={StaticResource FalseToVisibleConverter}}">
-                                        <TextBlock
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Is Sparse" Visibility="{Binding Data.SupportsSparse, Converter={StaticResource TrueToVisibleConverter}, Source={StaticResource proxy}}">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <StackPanel Visibility="{Binding IsSparse, Converter={StaticResource FalseToVisibleConverter}}">
+                                            <TextBlock
                                             FontWeight="Bold"
                                             Foreground="Green"
                                             Text="Candidate"
                                             ToolTip="Based on null rate, this column could be marked as sparse to save space."
                                             Visibility="{Binding ShouldBeSparse, Converter={StaticResource TrueToVisibleConverter}}" />
-                                    </StackPanel>
-                                    <StackPanel Visibility="{Binding IsSparse, Converter={StaticResource TrueToVisibleConverter}}">
-                                        <TextBlock Text="True" Visibility="{Binding SparseWarning, Converter={StaticResource FalseToVisibleConverter}}" />
-                                        <TextBlock
+                                        </StackPanel>
+                                        <StackPanel Visibility="{Binding IsSparse, Converter={StaticResource TrueToVisibleConverter}}">
+                                            <TextBlock Text="True" Visibility="{Binding SparseWarning, Converter={StaticResource FalseToVisibleConverter}}" />
+                                            <TextBlock
                                             FontWeight="Bold"
                                             Foreground="Red"
                                             Text="True/Warning"
                                             ToolTip="Based on null rate, this column should not be marked as sparse to save space."
                                             Visibility="{Binding SparseWarning, Converter={StaticResource TrueToVisibleConverter}}" />
+                                        </StackPanel>
                                     </StackPanel>
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="Text Features"
+                        <DataGridTemplateColumn Header="Text Features"
+                                            
 											SortMemberPath="TextContentFeatures">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding TextContentFeatures}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                            <DataGridTemplateColumn.HeaderStyle>
+                                <Style>
+                                    <Setter Property="Control.ToolTip" Value="Type of text contained by this column."/>
+                                </Style>
+                            </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding TextContentFeatures}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="Is Constrained" SortMemberPath="HasCheckConstraint">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock
-                                    Text="Check Constraint"
-                                    TextAlignment="Center"
-                                    Visibility="{Binding HasCheckConstraint, Converter={StaticResource TrueToVisibleConverter}}"
-                                    ToolTip="{Binding CheckConstraint}"
-                                    />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Constraints">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ItemsControl ItemsSource="{Binding Constraints}" >
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding ConstraintName}" ToolTip="{Binding AnnotatedDefinition}"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header=""
+                        <DataGridTemplateColumn Header=""
 											SortMemberPath="SortIndex">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Content="Show Top 10"
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="Show Top 10"
                                     
                                         ToolTip="Show the ten most frequently occuring values from the sampled data set."
 										Command="{Binding DataContext.ShowTopTenCommand, ElementName=Root}"
 										CommandParameter="{Binding}" />
 
-                                    <ItemsControl ItemsSource="{Binding FixItOperations}" IsEnabled="{Binding Idle}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Button Content="{Binding Title}" 
+                                        <ItemsControl ItemsSource="{Binding FixItOperations}" IsEnabled="{Binding Idle}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Button Content="{Binding Title}" 
                                                         Command="{Binding FixItCommand}"                        
                                                         Style="{StaticResource FixItButton}"					
                                                         ToolTip="{Binding ToolTip}"
 							                            Visibility="{Binding ShowFixIt, Converter={StaticResource TrueToVisibleConverter}}" />
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <StackPanel Orientation="Vertical" IsItemsHost="True"/>
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                    </ItemsControl>
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Orientation="Vertical" IsItemsHost="True"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
+                        <DataGridTextColumn Header="Description"
+										Binding="{Binding Description}" />
 
-                </DataGrid.Columns>
-            </DataGrid>
-        </GroupBox>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="Referenced Tables" Visibility="{Binding ReferencedTables, Converter={StaticResource NotZeroToVisibleConverter}}">
+                <Controls:TableGrid DataContext="{Binding ReferencedTables}"  />
+            </TabItem>
+            <TabItem Header="Referenced By Tables" Visibility="{Binding ReferencedByTables, Converter={StaticResource NotZeroToVisibleConverter}}">
+                <Controls:TableGrid DataContext="{Binding ReferencedByTables}"/>
+            </TabItem>
+        </TabControl>
     </DockPanel>
 
 </Window>

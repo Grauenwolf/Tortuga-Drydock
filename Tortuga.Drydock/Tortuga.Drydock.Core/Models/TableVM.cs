@@ -1,4 +1,5 @@
 using System;
+using System.Windows.Input;
 using Tortuga.Chain;
 using Tortuga.Sails;
 
@@ -95,6 +96,15 @@ namespace Tortuga.Drydock.Models
         }
 
         protected abstract void UpdateSuggestions();
+
+        public string Description { get => Get<string>(); set => Set(value); }
+
+        public ICommand ShowViewCommand => GetCommand(ShowView);
+
+        public void ShowView()
+        {
+            RequestDialog(this);
+        }
     }
 }
 

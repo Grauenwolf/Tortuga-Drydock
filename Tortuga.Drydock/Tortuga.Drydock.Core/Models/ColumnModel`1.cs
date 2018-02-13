@@ -1,3 +1,4 @@
+using System.Linq;
 using Tortuga.Anchor.Modeling;
 using Tortuga.Chain.Metadata;
 
@@ -10,12 +11,19 @@ namespace Tortuga.Drydock.Models
         {
             Column = column;
             NormalizedTypeName = column.TypeName.ToLowerInvariant();
+
+            Constraints.CollectionChanged += (s, e) =>
+            {
+                OnPropertyChanged(nameof(HasCheckConstraint));
+                OnPropertyChanged(nameof(HasDefaultConstraint));
+                OnPropertyChanged(nameof(HasForiegnKeyConstraint));
+            };
         }
 
         public int? ActualMaxLength { get => Get<int?>(); set => Set(value); }
         public decimal? AverageLength { get { return Get<decimal?>(); } set { Set(value); } }
-        [CalculatedField("HasCheckConstraint")]
-        public string CheckConstraint { get => Get<string>(); set => Set(value); }
+
+        public ConstraintCollection Constraints { get => GetNew<ConstraintCollection>(); }
 
         public ColumnMetadata<TDbType> Column { get; }
         /// <summary>
@@ -52,9 +60,6 @@ namespace Tortuga.Drydock.Models
             }
         }
 
-        [CalculatedField("HasDefault")]
-        public string Default { get => Get<string>(); set => Set(value); }
-
         public int? DistinctCount { get => Get<int?>(); set => Set(value); }
         [CalculatedField("DistinctCount,SampleSize")]
         public double? DistinctRate
@@ -71,35 +76,39 @@ namespace Tortuga.Drydock.Models
 
         public FixItColumnOperationCollection<TDbType> FixItOperations => GetNew<FixItColumnOperationCollection<TDbType>>();
 
+        [CalculatedField("ConstraintsLoaded")]
         public bool? HasCheckConstraint
         {
             get
             {
-                switch (CheckConstraint)
-                {
-                    case "":
-                        return false;
-                    case null:
-                        return null;
-                    default:
-                        return true;
-                }
+                if (!ConstraintsLoaded)
+                    return null;
+
+                return Constraints.Any(x => x.ConstraintType == ConstraintType.Check);
             }
         }
 
-        public bool? HasDefault
+        [CalculatedField("ConstraintsLoaded")]
+        public bool? HasDefaultConstraint
         {
             get
             {
-                switch (Default)
-                {
-                    case "":
-                        return false;
-                    case null:
-                        return null;
-                    default:
-                        return true;
-                }
+                if (!ConstraintsLoaded)
+                    return null;
+
+                return Constraints.Any(x => x.ConstraintType == ConstraintType.Default);
+            }
+        }
+
+        [CalculatedField("ConstraintsLoaded")]
+        public bool? HasForiegnKeyConstraint
+        {
+            get
+            {
+                if (!ConstraintsLoaded)
+                    return null;
+
+                return Constraints.Any(x => x.ConstraintType == ConstraintType.ForiegnKey);
             }
         }
 
@@ -134,6 +143,12 @@ namespace Tortuga.Drydock.Models
             get { return SampleSize > 0 && NullCount.HasValue ? (double?)NullCount / (double)SampleSize.Value : null; }
         }
 
+        [CalculatedField("NullCount,SampleSize")]
+        public bool? AlwaysNull
+        {
+            get { return SampleSize > 0 && NullCount.HasValue && NullCount == SampleSize; }
+        }
+
         public virtual string ObsoleteMessage { get => null; }
         public virtual string ObsoleteReplaceType { get => null; }
         public int? Precision { get => Column.Precision; }
@@ -141,6 +156,9 @@ namespace Tortuga.Drydock.Models
         public int? Scale { get => Column.Scale; }
         public int SortIndex { get => Get<int>(); set => Set(value); }
         public bool StatsLoaded { get => Get<bool>(); set => Set(value); }
+
+        public bool ConstraintsLoaded { get => Get<bool>(); set => Set(value); }
+
         /// <summary>
         /// Gets a value indicating whether this column supports the distinct operator.
         /// </summary>
@@ -206,6 +224,9 @@ namespace Tortuga.Drydock.Models
         }
 
         protected string NormalizedTypeName { get; }
+
+        public string Description { get => Get<string>(); set => Set(value); }
+
     }
 }
 

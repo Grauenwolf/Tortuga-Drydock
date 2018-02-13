@@ -1,6 +1,7 @@
 ﻿using log4net;
 using Microsoft.Data.ConnectionUI;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -80,7 +81,7 @@ namespace Tortuga.Drydock.ViewModels
 
         public WindowState WindowState { get => GetDefault(WindowState.Normal); set => Set(value); }
 
-        public void ShowDialog(object sender, DialogRequestedEventArgs e)
+        public async void ShowDialog(object sender, DialogRequestedEventArgs e)
         {
             switch (e.DataContext)
             {
@@ -89,6 +90,9 @@ namespace Tortuga.Drydock.ViewModels
                     break;
                 case DataVM dc:
                     ShowDataWindow(dc);
+                    break;
+                case TableVM table:
+                    await AnalyzeTableAsync(table);
                     break;
             }
         }
@@ -107,6 +111,18 @@ namespace Tortuga.Drydock.ViewModels
 
         async Task AnalyzeTableAsync(TableVM table)
         {
+            foreach (var view in Application.Current.Windows.OfType<TableWindow>())
+            {
+                if (view.DataContext == table)
+                {
+                    if (view.WindowState == WindowState.Minimized)
+                        view.WindowState = WindowState.Normal;
+                    view.Activate();
+                    return;
+                }
+            }
+
+
             var window = new TableWindow() { DataContext = table };
             window.Height = Height;
             window.Width = Width;
@@ -115,6 +131,7 @@ namespace Tortuga.Drydock.ViewModels
             window.Show();
             if (table.RowCount == null)
                 await Database.PreliminaryAnalysisAsync(table);
+
         }
 
         async Task ConnectAsync()

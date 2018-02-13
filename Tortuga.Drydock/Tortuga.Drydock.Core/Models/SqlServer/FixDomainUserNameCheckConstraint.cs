@@ -1,4 +1,5 @@
 using System.Data;
+using System.Text;
 
 namespace Tortuga.Drydock.Models.SqlServer
 {
@@ -17,14 +18,22 @@ namespace Tortuga.Drydock.Models.SqlServer
 
         protected override FixItVM OnFixIt()
         {
-            var change = $"ALTER TABLE {m_TableVM.QuotedTableName} ADD CONSTRAINT C_{m_TableVM.Table.Name.Name}_{Column.Column.ClrName} CHECK (charindex('\\',{Column.Column.QuotedSqlName})> 0 );";
-            var rollBack = $"ALTER TABLE {m_TableVM.QuotedTableName} DROP CONSTRAINT C_{m_TableVM.Table.Name.Name}_{Column.Column.ClrName}";
+            var change = new StringBuilder();
+            var rollBack = new StringBuilder();
 
+            change.AppendLine($"USE [{m_TableVM.DataSource.Name}]");
+            rollBack.AppendLine($"USE [{m_TableVM.DataSource.Name}]");
+
+            change.AppendLine($"ALTER TABLE {m_TableVM.QuotedTableName} ADD CONSTRAINT C_{m_TableVM.Table.Name.Name}_{Column.Column.ClrName} CHECK (charindex('\\',{Column.Column.QuotedSqlName})> 0 );");
+            rollBack.AppendLine($"ALTER TABLE {m_TableVM.QuotedTableName} DROP CONSTRAINT C_{m_TableVM.Table.Name.Name}_{Column.Column.ClrName}");
+
+            var create = $"CONSTRAINT C_{m_TableVM.Table.Name.Name}_{Column.Column.ClrName} CHECK (charindex('\\',{Column.Column.QuotedSqlName})> 0 )";
             return new FixItVM()
             {
                 WindowTitle = $"Create check constraint for {m_TableVM.Table.Name.ToString()}",
-                ChangeSql = change,
-                RollBackSql = rollBack
+                ChangeSql = change.ToString(),
+                RollBackSql = rollBack.ToString(),
+                CreateSql = create
             };
 
         }

@@ -29,15 +29,16 @@ namespace Tortuga.Drydock.Models.SqlServer
             var column = Column;
             var nullText = column.IsNullable ? "NULL" : "NOT NULL";
 
-            change.AppendLine($"ALTER TABLE {m_TableVM.Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} bit {nullText}");
+            //TODO: change needs to include migrating the old data
+            //change.AppendLine($"ALTER TABLE {m_TableVM.Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} bit {nullText}");
 
-            rollBack.AppendLine($"ALTER TABLE {m_TableVM.Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} {column.Column.FullTypeName} {nullText}");
+            var create = $"{m_TableVM.Table.Name.ToQuotedString()} {column.Column.QuotedSqlName} bit {nullText}";
 
             return new FixItVM()
             {
                 WindowTitle = $"Convert text column {column.Column.SqlName} to bit in {m_TableVM.Table.Name.ToString()}",
                 ChangeSql = change.ToString(),
-                RollBackSql = rollBack.ToString()
+                CreateSql = create
             };
 
         }

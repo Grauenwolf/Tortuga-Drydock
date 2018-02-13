@@ -116,6 +116,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Constraint.cs" />
+    <Compile Include="Models\ConstraintCollection.cs" />
+    <Compile Include="Models\ConstraintType.cs" />
     <Compile Include="Models\DataVM.cs" />
     <Compile Include="Models\FixItColumnOperationCollection`1.cs" />
     <Compile Include="Models\FixItColumnOperation`1.cs" />
@@ -136,8 +139,10 @@
     <Compile Include="Models\SQLite\SQLiteTableVM.cs" />
     <Compile Include="Models\SqlServer\FixAddIdentityColumn.cs" />
     <Compile Include="Models\SqlServer\FixBooleanAsText.cs" />
+    <Compile Include="Models\SqlServer\FixDecimalAsText.cs" />
     <Compile Include="Models\SqlServer\FixDomainUserNameCheckConstraint.cs" />
     <Compile Include="Models\SqlServer\FixEmailCheckConstraint.cs" />
+    <Compile Include="Models\SqlServer\FixIntegerAsText.cs" />
     <Compile Include="Models\SqlServer\FixNotEmptyCheckConstraint.cs" />
     <Compile Include="Models\SqlServer\FixNulls.cs" />
     <Compile Include="Models\SqlServer\FixObsoleteTypes.cs" />

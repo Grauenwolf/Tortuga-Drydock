@@ -13,6 +13,8 @@ namespace Tortuga.Drydock.Models
         where TDbType : struct
     {
 
+        public TableCollection<TName, TDbType> ReferencedByTables { get => GetNew<TableCollection<TName, TDbType>>(); }
+        public TableCollection<TName, TDbType> ReferencedTables { get => GetNew<TableCollection<TName, TDbType>>(); }
 
         public TableVM(IClass1DataSource dataSource, TableOrViewMetadata<TName, TDbType> table) : base(dataSource)
         {
