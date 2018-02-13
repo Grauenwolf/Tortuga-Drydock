@@ -40,7 +40,7 @@ namespace Tortuga.Drydock.Models.SqlServer
 
         protected override bool OnRefresh()
         {
-            return Column.TextContentFeatures.HasValue && Column.TextContentFeatures.Value.HasFlag(TextContentFeatures.DomainUserName) && Column.HasCheckConstraint == false;
+            return Column.HasForiegnKeyConstraint == false && Column.TextContentFeatures.HasValue && Column.TextContentFeatures.Value.HasFlag(TextContentFeatures.DomainUserName) && Column.HasCheckConstraint == false;
         }
     }
 }

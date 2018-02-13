@@ -1,4 +1,6 @@
+using System.Collections.ObjectModel;
 using System.Linq;
+using Tortuga.Anchor.Collections;
 using Tortuga.Anchor.Modeling;
 using Tortuga.Chain.Metadata;
 
@@ -226,6 +228,8 @@ namespace Tortuga.Drydock.Models
         protected string NormalizedTypeName { get; }
 
         public string Description { get => Get<string>(); set => Set(value); }
+
+        public ObservableCollectionExtended<object> TopNValues { get => GetNew<ObservableCollectionExtended<object>>(); }
 
     }
 }

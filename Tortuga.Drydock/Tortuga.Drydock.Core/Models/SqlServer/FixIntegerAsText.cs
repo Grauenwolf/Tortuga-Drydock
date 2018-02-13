@@ -47,7 +47,7 @@ namespace Tortuga.Drydock.Models.SqlServer
 
         protected override bool OnRefresh()
         {
-            return Column.TextContentFeatures?.HasFlag(TextContentFeatures.Integer) == true;
+            return Column.HasForiegnKeyConstraint == false && Column.TextContentFeatures?.HasFlag(TextContentFeatures.Integer) == true;
         }
     }
 }

@@ -37,6 +37,7 @@ namespace Tortuga.Drydock.Models.SqlServer
                 column.FixItOperations.Add(new FixEmailCheckConstraint(this, column));
                 column.FixItOperations.Add(new FixDomainUserNameCheckConstraint(this, column));
                 column.FixItOperations.Add(new FixNotEmptyCheckConstraint(this, column));
+                column.FixItOperations.Add(new FixAddEnumerationsCheckConstraint(this, column));
                 column.FixItOperations.Add(new FixBooleanAsText(this, column));
                 column.FixItOperations.Add(new FixIntegerAsText(this, column));
                 column.FixItOperations.Add(new FixDecimalAsText(this, column));
@@ -155,7 +156,8 @@ WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
                     var topHundred = await OnShowTopTenAsync(column, 100);
                     if (topHundred.Rows.Count > 0)
                     {
-
+                        column.TopNValues.Clear();
+                        column.TopNValues.AddRange(topHundred.Rows.OfType<DataRow>().Select(x => x["Value"] == DBNull.Value ? null : x["Value"]));
 
                         bool isEmail = true;
                         bool isDateTime = true;
@@ -165,11 +167,11 @@ WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
                         bool isBoolean = true;
                         bool isDecimal = true;
                         bool nonNullFound = false;
-                        long maxLong = long.MinValue; //TODO: Fixit will determine the best data type
+                        long maxLong = long.MinValue; //TODO: Fixit will use this to determine the best data type
 
                         var i = 0;
 
-                        while (i < topHundred.Rows.Count && (isEmail || isDateTime || isDomainUserName || isFile))
+                        while (i < topHundred.Rows.Count && (isEmail || isDateTime || isDomainUserName || isFile || isBoolean || isInteger || isDecimal))
                         {
                             var value = topHundred.Rows[i]["Value"] as String;
                             if (value != null)

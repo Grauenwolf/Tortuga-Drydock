@@ -1,4 +1,5 @@
 using System.Data;
+using System.Linq;
 using System.Text;
 
 namespace Tortuga.Drydock.Models.SqlServer
@@ -40,7 +41,7 @@ namespace Tortuga.Drydock.Models.SqlServer
 
         protected override bool OnRefresh()
         {
-            return Column.EmptyCount == 0 && Column.HasCheckConstraint == false && (Column.NullRate == null || Column.NullRate < 1);
+            return Column.HasForiegnKeyConstraint == false && Column.EmptyCount == 0 && Column.HasCheckConstraint == false && (Column.NullRate == null || Column.NullRate < 1);
         }
     }
 }
