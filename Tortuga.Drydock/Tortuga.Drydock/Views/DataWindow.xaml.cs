@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -57,10 +58,14 @@ namespace Tortuga.Drydock.Views
 
             // Get context: column and item.
             var column = dataGridCell.Column;
-            var item = dataGridCell.DataContext;
+            var columnName = (string)dataGridCell.Column.Header;
+            var item = (DataRowView)dataGridCell.DataContext;
 
-            if (((System.Data.DataRowView)item).Row.ItemArray[column.DisplayIndex] is DBNull)
+            if (item.Row[columnName] is DBNull)
                 dataGridCell.Background = Brushes.BlanchedAlmond;
+            else
+                dataGridCell.ClearValue(BackgroundProperty); //reset for virtualization
+
         }
     }
 }

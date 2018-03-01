@@ -57,10 +57,21 @@ AND ep.name = 'MS_Description'";
                 foreach (var item in columnDescriptions.Rows)
                 {
                     var table = Tables.Single(t => t.Table.Name.Schema == (string)item["SchemaName"] && t.Table.Name.Name == (string)item["TableName"]);
-                    var column = table.Columns.Single(c => c.Name == (string)item["ColumnName"]);
+                    var column = (SqlServerColumnModel)table.Columns.Single(c => c.Name == (string)item["ColumnName"]);
                     column.Description = (string)item["value"];
                 }
 
+                const string sparseColumnsSql = @"SELECT s.name AS SchemaName, t.name AS TableName, c.name AS ColumnName, c.is_sparse 
+FROM sys.tables t 
+INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
+INNER JOIN sys.columns c ON c.object_id = t.object_id";
+                var sparseColumns = await DataSource.Sql(sparseColumnsSql).ToTable().ExecuteAsync();
+                foreach (var item in sparseColumns.Rows)
+                {
+                    var table = Tables.Single(t => t.Table.Name.Schema == (string)item["SchemaName"] && t.Table.Name.Name == (string)item["TableName"]);
+                    var column = (SqlServerColumnModel)table.Columns.Single(c => c.Name == (string)item["ColumnName"]);
+                    column.IsSparse = (bool)item["is_sparse"];
+                }
 
                 const string relatedTablesSql = @"SELECT s.name AS SchemaName, t.name AS TableName, s2.name AS ReferencedSchemaName, t2.name AS ReferencedTableName
 FROM sys.foreign_key_columns fkc
