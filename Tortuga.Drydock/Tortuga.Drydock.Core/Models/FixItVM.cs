@@ -4,9 +4,8 @@ using Tortuga.Sails;
 
 namespace Tortuga.Drydock.Models
 {
-    public class FixItVM : ViewModelBaseImproved
+    public class FixItVM : ViewModelBase
     {
-
         public string ChangeSql { get => Get<string>(); set => Set(value); }
         public string CreateSql { get => Get<string>(); set => Set(value); }
         public ICommand CopyChangeSqlCommand => GetCommand(CopyChangeSql);
@@ -16,11 +15,13 @@ namespace Tortuga.Drydock.Models
         public string RollBackSql { get => Get<string>(); set => Set(value); }
         public string VerificationSql { get => Get<string>(); set => Set(value); }
         public string WindowTitle { get => Get<string>(); set => Set(value); }
-        void CopyChangeSql() => Clipboard.SetText(ChangeSql);
-        void CopyCreateSql() => Clipboard.SetText(CreateSql);
 
-        void CopyRollBackSql() => Clipboard.SetText(RollBackSql);
+        private void CopyChangeSql() => Clipboard.SetText(ChangeSql);
 
-        void CopyVerificationSql() => Clipboard.SetText(VerificationSql);
+        private void CopyCreateSql() => Clipboard.SetText(CreateSql);
+
+        private void CopyRollBackSql() => Clipboard.SetText(RollBackSql);
+
+        private void CopyVerificationSql() => Clipboard.SetText(VerificationSql);
     }
 }

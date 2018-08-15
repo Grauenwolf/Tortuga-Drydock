@@ -3,7 +3,7 @@ using Tortuga.Sails;
 
 namespace Tortuga.Drydock.Models
 {
-    public abstract class FixItOperation : ViewModelBaseImproved
+    public abstract class FixItOperation : ViewModelBase
     {
         protected TableVM TableVM { get; }
 
@@ -17,17 +17,14 @@ namespace Tortuga.Drydock.Models
         public bool ShowFixIt { get => Get<bool>(); protected set => Set(value); }
 
         public void Refresh() => ShowFixIt = OnRefresh();
+
         protected abstract bool OnRefresh();
 
-        void FixIt() => TableVM.RequestDialog(OnFixIt());
+        private void FixIt() => TableVM.RequestDialog(OnFixIt());
 
         protected abstract FixItVM OnFixIt();
 
         public abstract string Title { get; }
         public abstract string ToolTip { get; }
-
     }
 }
-
-
-

@@ -14,12 +14,11 @@ using Tortuga.Sails;
 
 namespace Tortuga.Drydock.ViewModels
 {
-    class MainViewModel : ViewModelBaseImproved
+    internal class MainViewModel : ViewModelBase
     {
         private static readonly ILog s_Log = LogManager.GetLogger(typeof(App));
 
-
-        ObservableCollectionExtended<string> m_LogEvents = new ObservableCollectionExtended<string>();
+        private ObservableCollectionExtended<string> m_LogEvents = new ObservableCollectionExtended<string>();
 
         public ICommand AnalyzeTableCommand => GetCommand<TableVM>(async t => await AnalyzeTableAsync(t));
 
@@ -36,6 +35,7 @@ namespace Tortuga.Drydock.ViewModels
                     case DatabaseType.SqlServer:
                     case DatabaseType.Access:
                         return true;
+
                     default:
                         return false;
                 }
@@ -56,6 +56,7 @@ namespace Tortuga.Drydock.ViewModels
 
         public double Height { get => GetDefault(400); set => Set(value); }
         public bool IsConnected { get => Get<bool>(); private set => Set(value); }
+
         [CalculatedField("IsConnected")]
         public int IsConnectedNumber { get => IsConnected ? 1 : 0; }
 
@@ -63,6 +64,7 @@ namespace Tortuga.Drydock.ViewModels
         public int SelectedTab { get => GetDefault(2); set => Set(value); }
         public ReadOnlyObservableCollectionExtended<string> LogEvents => m_LogEvents.ReadOnlyWrapper;
         public string Status { get => Get<string>(); private set => Set(value); }
+
         [CalculatedField("DatabaseType")]
         public bool UseAccess { get => DatabaseType == DatabaseType.Access; set { if (value) DatabaseType = DatabaseType.Access; } }
 
@@ -77,6 +79,7 @@ namespace Tortuga.Drydock.ViewModels
 
         [CalculatedField("DatabaseType")]
         public bool UseSqlServer { get => DatabaseType == DatabaseType.SqlServer; set { if (value) DatabaseType = DatabaseType.SqlServer; } }
+
         public double Width { get => GetDefault(900); set => Set(value); }
 
         public WindowState WindowState { get => GetDefault(WindowState.Normal); set => Set(value); }
@@ -88,9 +91,11 @@ namespace Tortuga.Drydock.ViewModels
                 case FixItVM dc:
                     ShowFixItWindow(dc);
                     break;
+
                 case DataVM dc:
                     ShowDataWindow(dc);
                     break;
+
                 case TableVM table:
                     await AnalyzeTableAsync(table);
                     break;
@@ -109,7 +114,7 @@ namespace Tortuga.Drydock.ViewModels
             window.Show();
         }
 
-        async Task AnalyzeTableAsync(TableVM table)
+        private async Task AnalyzeTableAsync(TableVM table)
         {
             foreach (var view in Application.Current.Windows.OfType<TableWindow>())
             {
@@ -122,7 +127,6 @@ namespace Tortuga.Drydock.ViewModels
                 }
             }
 
-
             var window = new TableWindow() { DataContext = table };
             window.Height = Height;
             window.Width = Width;
@@ -131,10 +135,9 @@ namespace Tortuga.Drydock.ViewModels
             window.Show();
             if (table.RowCount == null)
                 await Database.PreliminaryAnalysisAsync(table);
-
         }
 
-        async Task ConnectAsync()
+        private async Task ConnectAsync()
         {
             if (IsConnecting)
                 return;
@@ -159,7 +162,6 @@ namespace Tortuga.Drydock.ViewModels
                 await Database.LoadSchemaAsync();
                 Database.AttachUIEvents(ShowDialog, LogEvent);
 
-
                 LogEvent($"Connected to {Database.DataSource.Name}!");
 
                 IsConnected = true;
@@ -169,7 +171,6 @@ namespace Tortuga.Drydock.ViewModels
                 Settings.Default.LastConnectionString = ConnectionString;
                 Settings.Default.LastDatabaseType = (int)DatabaseType;
                 Settings.Default.Save();
-
             }
             catch (Exception ex)
             {
@@ -181,23 +182,20 @@ namespace Tortuga.Drydock.ViewModels
             {
                 IsConnecting = false;
             }
-
-
         }
 
-        void EditConnection()
+        private void EditConnection()
         {
             using (var dialog = new DataConnectionDialog())
             {
-
                 //ref: http://stackoverflow.com/questions/6895251/display-a-connectionstring-dialog/32326126#32326126
-
 
                 switch (DatabaseType)
                 {
                     case DatabaseType.SqlServer:
                         dialog.DataSources.Add(DataSource.SqlDataSource);
                         break;
+
                     case DatabaseType.Access:
                         dialog.DataSources.Add(DataSource.AccessDataSource);
                         break;
@@ -223,13 +221,14 @@ namespace Tortuga.Drydock.ViewModels
             }
         }
 
-        void LogEvent(string message)
+        private void LogEvent(string message)
         {
             s_Log.Info(message);
             m_LogEvents.Add(message);
             Status = message;
         }
-        void LogEvent(object sender, LogEventArgs e)
+
+        private void LogEvent(object sender, LogEventArgs e)
         {
             LogEvent(e.Message);
         }

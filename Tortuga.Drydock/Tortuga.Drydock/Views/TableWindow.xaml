@@ -6,8 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:Tortuga.Drydock.Views"
-    xmlns:sails="clr-namespace:Tortuga.Sails;assembly=Tortuga.Drydock.Core"
-    xmlns:Controls="clr-namespace:Tortuga.Drydock.Controls" 
+    xmlns:sails="clr-namespace:Tortuga.Sails;assembly=Tortuga.Sails"
+    xmlns:Controls="clr-namespace:Tortuga.Drydock.Controls"
     Height="400"
     Width="900"
     mc:Ignorable="d"
@@ -57,21 +57,17 @@
                                 <Button Content="{Binding Title}"
 							Command="{Binding FixItCommand}"
                             Style="{StaticResource FixItButton}"
-							
+
                             ToolTip="{Binding ToolTip}"
 							Visibility="{Binding ShowFixIt, Converter={StaticResource TrueToVisibleConverter}}" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                <StackPanel Orientation="Horizontal" IsItemsHost="True" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
-
-
-
-
 
                     <!--
 
@@ -87,8 +83,7 @@
                     <Button Content="Reset"
 							Command="{Binding ResetCommand}"
 							IsEnabled="{Binding Idle}"
-							ToolTip="Reset the analysis on the table. Use after make changes to the table structure or data."							
-							/>
+							ToolTip="Reset the analysis on the table. Use after make changes to the table structure or data." />
               -->
                     <ProgressBar
                         Width="100"
@@ -115,7 +110,7 @@
                 </StackPanel>
             </StackPanel>
         </GroupBox>
-        <TabControl >
+        <TabControl>
             <TabItem Header="Columns">
                 <DataGrid
                 AutoGenerateColumns="False"
@@ -410,11 +405,11 @@
                         </DataGridTemplateColumn>
 
                         <DataGridTemplateColumn Header="Text Features"
-                                            
+
 											SortMemberPath="TextContentFeatures">
                             <DataGridTemplateColumn.HeaderStyle>
                                 <Style>
-                                    <Setter Property="Control.ToolTip" Value="Type of text contained by this column."/>
+                                    <Setter Property="Control.ToolTip" Value="Type of text contained by this column." />
                                 </Style>
                             </DataGridTemplateColumn.HeaderStyle>
                             <DataGridTemplateColumn.CellTemplate>
@@ -427,10 +422,10 @@
                         <DataGridTemplateColumn Header="Constraints">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <ItemsControl ItemsSource="{Binding Constraints}" >
+                                    <ItemsControl ItemsSource="{Binding Constraints}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding ConstraintName}" ToolTip="{Binding AnnotatedDefinition}"/>
+                                                <TextBlock Text="{Binding ConstraintName}" ToolTip="{Binding AnnotatedDefinition}" />
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                         <ItemsControl.ItemsPanel>
@@ -449,7 +444,7 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
                                         <Button Content="Show Top 10"
-                                    
+
                                         ToolTip="Show the ten most frequently occuring values from the sampled data set."
 										Command="{Binding DataContext.ShowTopTenCommand, ElementName=Root}"
 										CommandParameter="{Binding}" />
@@ -457,16 +452,16 @@
                                         <ItemsControl ItemsSource="{Binding FixItOperations}" IsEnabled="{Binding Idle}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <Button Content="{Binding Title}" 
-                                                        Command="{Binding FixItCommand}"                        
-                                                        Style="{StaticResource FixItButton}"					
+                                                    <Button Content="{Binding Title}"
+                                                        Command="{Binding FixItCommand}"
+                                                        Style="{StaticResource FixItButton}"
                                                         ToolTip="{Binding ToolTip}"
 							                            Visibility="{Binding ShowFixIt, Converter={StaticResource TrueToVisibleConverter}}" />
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                             <ItemsControl.ItemsPanel>
                                                 <ItemsPanelTemplate>
-                                                    <StackPanel Orientation="Vertical" IsItemsHost="True"/>
+                                                    <StackPanel Orientation="Vertical" IsItemsHost="True" />
                                                 </ItemsPanelTemplate>
                                             </ItemsControl.ItemsPanel>
                                         </ItemsControl>
@@ -477,17 +472,15 @@
 
                         <DataGridTextColumn Header="Description"
 										Binding="{Binding Description}" />
-
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
             <TabItem Header="Referenced Tables" Visibility="{Binding ReferencedTables, Converter={StaticResource NotZeroToVisibleConverter}}">
-                <Controls:TableGrid DataContext="{Binding ReferencedTables}"  />
+                <Controls:TableGrid DataContext="{Binding ReferencedTables}" />
             </TabItem>
             <TabItem Header="Referenced By Tables" Visibility="{Binding ReferencedByTables, Converter={StaticResource NotZeroToVisibleConverter}}">
-                <Controls:TableGrid DataContext="{Binding ReferencedByTables}"/>
+                <Controls:TableGrid DataContext="{Binding ReferencedByTables}" />
             </TabItem>
         </TabControl>
     </DockPanel>
-
 </Window>

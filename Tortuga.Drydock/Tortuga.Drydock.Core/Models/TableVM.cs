@@ -5,14 +5,15 @@ using Tortuga.Sails;
 
 namespace Tortuga.Drydock.Models
 {
-    public abstract class TableVM : ViewModelBaseImproved
+    public abstract class TableVM : ViewModelBase
     {
-        int m_WorkCount;
+        private int m_WorkCount;
 
         protected TableVM(IClass1DataSource dataSource)
         {
             DataSource = dataSource;
         }
+
         /// <summary>
         /// Occurs when dialog is requested. The UI layer will listen for this event in order to show the correct UI element.
         /// </summary>
@@ -29,7 +30,7 @@ namespace Tortuga.Drydock.Models
         public abstract string FullName { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is working on one or more jobs. 
+        /// Gets a value indicating whether this instance is working on one or more jobs.
         /// </summary>
         /// <value><c>false</c> if this instance is working on something; otherwise, <c>true</c>.</value>
         public bool Idle { get => m_WorkCount == 0; }
@@ -75,7 +76,6 @@ namespace Tortuga.Drydock.Models
             OnPropertyChanged("Idle");
         }
 
-
         /// <summary>
         /// Call to indicate that a job has been completed, successfully or otherwise.
         /// </summary>
@@ -107,5 +107,3 @@ namespace Tortuga.Drydock.Models
         }
     }
 }
-
-

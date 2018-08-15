@@ -20,8 +20,7 @@ namespace Tortuga.Drydock
 
             DispatcherUnhandledException += Current_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            ViewModelBaseImproved.UnhandledCommandEvent += ViewModelBaseImproved_UnhandledCommandEvent;
-
+            ViewModelBase.UnhandledCommandError += ViewModelBaseImproved_UnhandledCommandEvent;
 
             base.OnStartup(e);
 
