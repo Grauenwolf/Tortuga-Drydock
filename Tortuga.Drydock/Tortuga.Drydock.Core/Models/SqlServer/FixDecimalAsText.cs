@@ -24,11 +24,8 @@ namespace Tortuga.Drydock.Models.SqlServer
             change.AppendLine($"USE [{m_TableVM.DataSource.Name}]");
             rollBack.AppendLine($"USE [{m_TableVM.DataSource.Name}]");
 
-
-
             var column = Column;
-            var nullText = column.IsNullable ? "NULL" : "NOT NULL";
-
+            var nullText = column.IsNullable == true ? "NULL" : "NOT NULL";
 
             change.AppendLine($"ALTER TABLE {m_TableVM.Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} double {nullText}");
             rollBack.AppendLine($"ALTER TABLE {m_TableVM.Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} {column.Column.FullTypeName} {nullText}");
@@ -42,7 +39,6 @@ namespace Tortuga.Drydock.Models.SqlServer
                 CreateSql = create,
                 RollBackSql = rollBack.ToString()
             };
-
         }
 
         protected override bool OnRefresh()
@@ -51,5 +47,3 @@ namespace Tortuga.Drydock.Models.SqlServer
         }
     }
 }
-
-

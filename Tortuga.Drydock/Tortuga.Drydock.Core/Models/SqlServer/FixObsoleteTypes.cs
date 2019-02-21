@@ -29,7 +29,7 @@ namespace Tortuga.Drydock.Models.SqlServer
 
             foreach (var column in afectedColumns)
             {
-                var nullText = column.IsNullable ? "NULL" : "NOT NULL";
+                var nullText = column.IsNullable == true ? "NULL" : "NOT NULL";
 
                 change.AppendLine($"ALTER TABLE {m_TableVM.Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} {column.ObsoleteReplaceType} {nullText}");
 
@@ -45,5 +45,3 @@ namespace Tortuga.Drydock.Models.SqlServer
         }
     }
 }
-
-

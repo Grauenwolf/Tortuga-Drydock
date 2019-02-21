@@ -8,7 +8,6 @@ namespace Tortuga.Drydock.Models.SqlServer
     {
         public SqlServerColumnModel(ColumnMetadata<SqlDbType> column) : base(column)
         {
-
         }
 
         public override bool ContainsText
@@ -24,12 +23,12 @@ namespace Tortuga.Drydock.Models.SqlServer
                     case SqlDbType.Text:
                     case SqlDbType.NText:
                         return true;
+
                     default:
                         return base.ContainsText;
                 }
             }
         }
-
 
         public bool IsSparse { get => Get<bool>(); set => Set(value); }
 
@@ -46,6 +45,7 @@ namespace Tortuga.Drydock.Models.SqlServer
                     case SqlDbType.Image: return "Use varBinary(max)";
                     case SqlDbType.VarChar when Column.MaxLength == 1 || Column.MaxLength == 2:
                         return "Use Char instead of VarChar if the max length is 1 or 2";
+
                     case SqlDbType.NVarChar when Column.MaxLength == 1 || Column.MaxLength == 2:
                         return "Use NChar instead of NVarChar if the max length is 1 or 2";
                 }
@@ -66,10 +66,13 @@ namespace Tortuga.Drydock.Models.SqlServer
                     case SqlDbType.Image: return "varBinary(max)";
                     case SqlDbType.VarChar when Column.MaxLength == 1:
                         return "char(1)";
+
                     case SqlDbType.VarChar when Column.MaxLength == 2:
                         return "char(2)";
+
                     case SqlDbType.NVarChar when Column.MaxLength == 1:
                         return "NChar(1)";
+
                     case SqlDbType.NVarChar when Column.MaxLength == 2:
                         return "NChar(2)";
                 }
@@ -84,7 +87,7 @@ namespace Tortuga.Drydock.Models.SqlServer
             {
                 if (NullRate == null)
                     return null;
-                if (!Column.IsNullable)
+                if (Column.IsNullable != true)
                     return null;
 
                 //reference: https://technet.microsoft.com/en-us/library/cc280604(v=sql.120).aspx
@@ -138,7 +141,6 @@ namespace Tortuga.Drydock.Models.SqlServer
                     case SqlDbType.NVarChar:
                     case SqlDbType.Xml:
                         return NullRate >= .60;
-
                 }
 
                 //Special cases
@@ -154,12 +156,10 @@ namespace Tortuga.Drydock.Models.SqlServer
                         }
                     case "hierarchyid":
                         return NullRate >= .60;
-
                 }
                 return null;
             }
         }
-
 
         [CalculatedField("NullRate,IsSparse")]
         public bool SparseCandidate { get => !IsSparse && (ShouldBeSparse == true); }
@@ -201,5 +201,3 @@ namespace Tortuga.Drydock.Models.SqlServer
         }
     }
 }
-
-

@@ -24,10 +24,8 @@ namespace Tortuga.Drydock.Models.SqlServer
             change.AppendLine($"USE [{m_TableVM.DataSource.Name}]");
             rollBack.AppendLine($"USE [{m_TableVM.DataSource.Name}]");
 
-
-
             var column = Column;
-            var nullText = column.IsNullable ? "NULL" : "NOT NULL";
+            var nullText = column.IsNullable == true ? "NULL" : "NOT NULL";
 
             //TODO: change needs to include migrating the old data
             //change.AppendLine($"ALTER TABLE {m_TableVM.Table.Name.ToQuotedString()} ALTER COLUMN {column.Column.QuotedSqlName} bit {nullText}");
@@ -40,7 +38,6 @@ namespace Tortuga.Drydock.Models.SqlServer
                 ChangeSql = change.ToString(),
                 CreateSql = create
             };
-
         }
 
         protected override bool OnRefresh()
@@ -49,5 +46,3 @@ namespace Tortuga.Drydock.Models.SqlServer
         }
     }
 }
-
-

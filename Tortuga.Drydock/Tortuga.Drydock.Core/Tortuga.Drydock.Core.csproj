@@ -33,11 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.2.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>..\packages\BouncyCastle.1.8.2\lib\BouncyCastle.Crypto.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.Sqlite, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Data.Sqlite.Core.2.1.0\lib\netstandard2.0\Microsoft.Data.Sqlite.dll</HintPath>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.4.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle.1.8.4\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
@@ -48,8 +45,8 @@
     <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop, Version=1.0.168.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
     </Reference>
-    <Reference Include="MimeKit, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
-      <HintPath>..\packages\MimeKit.2.0.6\lib\net45\MimeKit.dll</HintPath>
+    <Reference Include="MimeKit, Version=2.1.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
+      <HintPath>..\packages\MimeKit.2.1.2\lib\net45\MimeKit.dll</HintPath>
     </Reference>
     <Reference Include="Nito.AsyncEx, Version=4.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nito.AsyncEx.4.0.1\lib\net45\Nito.AsyncEx.dll</HintPath>
@@ -60,13 +57,13 @@
     <Reference Include="Nito.AsyncEx.Enlightenment, Version=4.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nito.AsyncEx.4.0.1\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=4.0.2.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npgsql.4.0.2\lib\net451\Npgsql.dll</HintPath>
+    <Reference Include="Npgsql, Version=4.0.4.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.4.0.4\lib\net451\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="SQLitePCLRaw.core, Version=1.1.11.121, Culture=neutral, PublicKeyToken=1488e028ca7ab535, processorArchitecture=MSIL">
-      <HintPath>..\packages\SQLitePCLRaw.core.1.1.11\lib\net45\SQLitePCLRaw.core.dll</HintPath>
+    <Reference Include="SQLitePCLRaw.core, Version=1.1.13.388, Culture=neutral, PublicKeyToken=1488e028ca7ab535, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.core.1.1.13\lib\net45\SQLitePCLRaw.core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -76,18 +73,18 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.109.0\lib\net46\System.Data.SQLite.dll</HintPath>
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.109.2\lib\net46\System.Data.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
@@ -99,23 +96,23 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Tortuga.Anchor, Version=1.2.6283.989, Culture=neutral, PublicKeyToken=f554488cb4f278bd, processorArchitecture=MSIL">
-      <HintPath>..\packages\Tortuga.Anchor.1.2.6283.989\lib\net46\Tortuga.Anchor.dll</HintPath>
+    <Reference Include="Tortuga.Anchor, Version=2.0.6931.40035, Culture=neutral, PublicKeyToken=f554488cb4f278bd, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tortuga.Anchor.2.0.6931.40035\lib\net46\Tortuga.Anchor.dll</HintPath>
     </Reference>
-    <Reference Include="Tortuga.Chain.Access, Version=1.1.6311.41071, Culture=neutral, PublicKeyToken=8769fd32a2872cf0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Tortuga.Chain.Access.1.1.6311.41063\lib\net46\Tortuga.Chain.Access.dll</HintPath>
+    <Reference Include="Tortuga.Chain.Access, Version=2.1.6987.40742, Culture=neutral, PublicKeyToken=8769fd32a2872cf0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tortuga.Chain.Access.2.1.6987.40737\lib\net46\Tortuga.Chain.Access.dll</HintPath>
     </Reference>
-    <Reference Include="Tortuga.Chain.Core, Version=1.2.6563.39725, Culture=neutral, PublicKeyToken=8769fd32a2872cf0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Tortuga.Chain.Core.1.2.6563.39715\lib\net46\Tortuga.Chain.Core.dll</HintPath>
+    <Reference Include="Tortuga.Chain.Core, Version=2.1.6963.38581, Culture=neutral, PublicKeyToken=8769fd32a2872cf0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tortuga.Chain.Core.2.1.6963.38576\lib\net46\Tortuga.Chain.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Tortuga.Chain.PostgreSql, Version=1.2.6553.39913, Culture=neutral, PublicKeyToken=8769fd32a2872cf0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Tortuga.Chain.PostgreSql.1.2.6553.39906\lib\net46\Tortuga.Chain.PostgreSql.dll</HintPath>
+    <Reference Include="Tortuga.Chain.PostgreSql, Version=2.1.6987.41744, Culture=neutral, PublicKeyToken=8769fd32a2872cf0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tortuga.Chain.PostgreSql.2.1.6987.41742\lib\net46\Tortuga.Chain.PostgreSql.dll</HintPath>
     </Reference>
-    <Reference Include="Tortuga.Chain.SQLite, Version=1.2.6553.42028, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Tortuga.Chain.SQLite.1.2.6553.42023\lib\net46\Tortuga.Chain.SQLite.dll</HintPath>
+    <Reference Include="Tortuga.Chain.SQLite, Version=2.1.6987.43178, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tortuga.Chain.SQLite.2.1.6987.43176\lib\net46\Tortuga.Chain.SQLite.dll</HintPath>
     </Reference>
-    <Reference Include="Tortuga.Chain.SqlServer, Version=1.2.6553.39558, Culture=neutral, PublicKeyToken=8769fd32a2872cf0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Tortuga.Chain.SqlServer.1.2.6553.39547\lib\net46\Tortuga.Chain.SqlServer.dll</HintPath>
+    <Reference Include="Tortuga.Chain.SqlServer, Version=2.1.6988.28255, Culture=neutral, PublicKeyToken=8769fd32a2872cf0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Tortuga.Chain.SqlServer.2.1.6988.28249\lib\net46\Tortuga.Chain.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Tortuga.Sails, Version=1.2.6801.28650, Culture=neutral, PublicKeyToken=e177acbf757d82e6, processorArchitecture=MSIL">
       <HintPath>..\packages\Tortuga.Sails.1.2.6801.28650\lib\net46\Tortuga.Sails.dll</HintPath>
@@ -183,7 +180,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.109.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.109.0\build\net46\System.Data.SQLite.Core.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.109.2\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.109.2\build\net46\System.Data.SQLite.Core.targets'))" />
   </Target>
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.109.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.109.0\build\net46\System.Data.SQLite.Core.targets')" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.109.2\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.109.2\build\net46\System.Data.SQLite.Core.targets')" />
 </Project>

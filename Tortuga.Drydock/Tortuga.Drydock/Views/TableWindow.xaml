@@ -242,6 +242,11 @@
                         Header="Distinct Rate"
                         SortMemberPath="DistinctRate"
                         Visibility="{Binding Data.SupportsIndexes, Converter={StaticResource FalseToVisibleConverter}, Source={StaticResource proxy}}">
+                            <DataGridTemplateColumn.HeaderStyle>
+                                <Style>
+                                    <Setter Property="Control.ToolTip" Value="This indicates the percentage of rows that contain the same values." />
+                                </Style>
+                            </DataGridTemplateColumn.HeaderStyle>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
@@ -271,6 +276,11 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="Null Rate" SortMemberPath="NullRate">
+                            <DataGridTemplateColumn.HeaderStyle>
+                                <Style>
+                                    <Setter Property="Control.ToolTip" Value="This indicates the percentage of rows that contain nulls." />
+                                </Style>
+                            </DataGridTemplateColumn.HeaderStyle>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
@@ -309,6 +319,11 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="Empty Rate" SortMemberPath="EmptyRate">
+                            <DataGridTemplateColumn.HeaderStyle>
+                                <Style>
+                                    <Setter Property="Control.ToolTip" Value="This indicates the percentage of rows that contain empty strings." />
+                                </Style>
+                            </DataGridTemplateColumn.HeaderStyle>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel>
@@ -409,7 +424,7 @@
 											SortMemberPath="TextContentFeatures">
                             <DataGridTemplateColumn.HeaderStyle>
                                 <Style>
-                                    <Setter Property="Control.ToolTip" Value="Type of text contained by this column." />
+                                    <Setter Property="Control.ToolTip" Value="Type of text contained by this column (e.g. email, numbers, dates)." />
                                 </Style>
                             </DataGridTemplateColumn.HeaderStyle>
                             <DataGridTemplateColumn.CellTemplate>

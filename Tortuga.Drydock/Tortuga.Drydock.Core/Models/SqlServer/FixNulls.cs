@@ -7,6 +7,7 @@ namespace Tortuga.Drydock.Models.SqlServer
     public class FixNulls : FixItOperation
     {
         private readonly SqlServerTableVM m_TableVM;
+
         public FixNulls(SqlServerTableVM tableVM) : base(tableVM)
         {
             m_TableVM = tableVM;
@@ -14,6 +15,7 @@ namespace Tortuga.Drydock.Models.SqlServer
 
         public override string Title => "Nullable Columns";
         public override string ToolTip => "Generate script to mark columns as non-nullable.";
+
         protected override bool OnRefresh() => m_TableVM.Columns.Any(x => x.NullCount == 0);
 
         protected override FixItVM OnFixIt()
@@ -26,7 +28,7 @@ namespace Tortuga.Drydock.Models.SqlServer
             change.AppendLine($"USE [{m_TableVM.DataSource.Name}]");
             rollBack.AppendLine($"USE [{m_TableVM.DataSource.Name}]");
 
-            var afectedColumns = m_TableVM.Columns.Where(c => c.IsNullable && c.NullCount == 0).Cast<SqlServerColumnModel>().ToList();
+            var afectedColumns = m_TableVM.Columns.Where(c => c.IsNullable == true && c.NullCount == 0).Cast<SqlServerColumnModel>().ToList();
 
             verification.AppendLine($"SELECT * FROM {m_TableVM.Table.Name.ToQuotedString()} WHERE " + string.Join(" OR ", afectedColumns.Select(x => $"{x.Column.QuotedSqlName} IS NULL")));
 
@@ -50,5 +52,3 @@ namespace Tortuga.Drydock.Models.SqlServer
         }
     }
 }
-
-

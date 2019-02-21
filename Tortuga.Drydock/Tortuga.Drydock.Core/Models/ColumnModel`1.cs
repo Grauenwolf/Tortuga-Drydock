@@ -28,6 +28,7 @@ namespace Tortuga.Drydock.Models
         public ConstraintCollection Constraints { get => GetNew<ConstraintCollection>(); }
 
         public ColumnMetadata<TDbType> Column { get; }
+
         /// <summary>
         /// Indicates that this is a text column.
         /// </summary>
@@ -63,6 +64,7 @@ namespace Tortuga.Drydock.Models
         }
 
         public int? DistinctCount { get => Get<int?>(); set => Set(value); }
+
         [CalculatedField("DistinctCount,SampleSize")]
         public double? DistinctRate
         {
@@ -70,6 +72,7 @@ namespace Tortuga.Drydock.Models
         }
 
         public int? EmptyCount { get => Get<int?>(); set => Set(value); }
+
         [CalculatedField("EmptyCount,SampleSize")]
         public double? EmptyRate
         {
@@ -117,7 +120,8 @@ namespace Tortuga.Drydock.Models
         public bool IsComputed { get => Column.IsComputed; }
         public bool IsIdentity { get => Column.IsIdentity; }
         public bool? IsIndexed { get => Get<bool?>(); set => Set(value); }
-        public bool IsNullable { get => Column.IsNullable; }
+        public bool? IsNullable { get => Column.IsNullable; }
+
         [CalculatedField("ObsoleteMessage")]
         public bool IsObsolete { get => ObsoleteMessage != null; }
 
@@ -127,6 +131,7 @@ namespace Tortuga.Drydock.Models
         public bool? IsUniqueIndex { get => Get<bool?>(); set => Set(value); }
         public int? MaxLength { get => Column.MaxLength; }
         public string Name { get => Column.SqlName; }
+
         [CalculatedField("DistinctCount,SampleSize")]
         public bool? NoDistinctValues
         {
@@ -139,6 +144,7 @@ namespace Tortuga.Drydock.Models
         }
 
         public int? NullCount { get => Get<int?>(); set => Set(value); }
+
         [CalculatedField("NullCount,SampleSize")]
         public double? NullRate
         {
@@ -213,9 +219,7 @@ namespace Tortuga.Drydock.Models
         public string TypeName { get => Column.TypeName; }
         public virtual bool UseMaxLength { get => Column.MaxLength.HasValue; }
 
-
         public virtual bool UsePrecision { get => Column.Precision.HasValue; }
-
 
         public virtual bool UseScale { get => Column.Scale.HasValue; }
 
@@ -230,8 +234,5 @@ namespace Tortuga.Drydock.Models
         public string Description { get => Get<string>(); set => Set(value); }
 
         public ObservableCollectionExtended<object> TopNValues { get => GetNew<ObservableCollectionExtended<object>>(); }
-
     }
 }
-
-

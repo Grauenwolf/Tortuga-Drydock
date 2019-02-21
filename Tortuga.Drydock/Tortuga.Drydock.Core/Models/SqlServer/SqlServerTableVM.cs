@@ -47,7 +47,6 @@ namespace Tortuga.Drydock.Models.SqlServer
 
         public override bool SupportsSparse { get => true; }
 
-
         protected override Task AnalyzeColumnAsync(ColumnModel<SqlDbType> column) => AnalyzeColumnAsync((SqlServerColumnModel)column);
 
         protected async Task AnalyzeColumnAsync(SqlServerColumnModel column)
@@ -58,11 +57,10 @@ namespace Tortuga.Drydock.Models.SqlServer
             StartWork();
             try
             {
-
                 var sql = new StringBuilder(@"SELECT COUNT(*) AS SampleSize");
                 if (column.SupportsDistinct)
                     sql.Append($@", COUNT(DISTINCT {column.Column.QuotedSqlName}) AS DistinctCount");
-                if (column.IsNullable)
+                if (column.IsNullable == true)
                     sql.Append($@", SUM( CASE WHEN {column.Column.QuotedSqlName} IS NULL THEN 1 ELSE 0 END) AS [NullCount]");
                 if (column.ContainsText)
                 {
@@ -83,7 +81,7 @@ namespace Tortuga.Drydock.Models.SqlServer
                         if (column.IsUnique == null)
                             column.IsUnique = column.DistinctCount == column.SampleSize;
                     }
-                    if (column.IsNullable)
+                    if (column.IsNullable == true)
                         column.NullCount = (int)row["NullCount"];
                     if (column.ContainsText)
                     {
@@ -93,8 +91,7 @@ namespace Tortuga.Drydock.Models.SqlServer
                     }
                 }
 
-
-                const string constraintSql = @"SELECT 
+                const string constraintSql = @"SELECT
 cc.name AS ConstraintName,
 cc.definition AS [Definition],
 2 AS ConstraintType
@@ -105,7 +102,6 @@ INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
 WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
 
                 column.Constraints.AddRange(await DataSource.Sql(constraintSql, new { Table.Name.Name, Table.Name.Schema, Column = column.Column.SqlName }).ToCollection<Constraint>().ExecuteAsync());
-
 
                 const string fkSql = @"SELECT s2.name + '.' + t2.name + '(' + c2.name + ')' AS Definition,
        fk.name AS ConstraintName,
@@ -194,10 +190,8 @@ WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
                                 isDecimal = isDecimal && float.TryParse(value, out var _);
 
                                 isBoolean = isBoolean && IsBoolean(value);
-
                             }
                             i += 1;
-
                         }
 
                         if (nonNullFound)
@@ -224,9 +218,7 @@ WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
                 column.FixItOperations.RefreshAll();
 
                 column.StatsLoaded = true;
-
             }
-
             catch (Exception ex)
             {
                 Status = ex.ToString();
@@ -235,7 +227,6 @@ WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
             finally
             {
                 StopWork();
-
             }
         }
 
@@ -254,6 +245,7 @@ WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
                 case "N":
                 case "NO":
                     return true;
+
                 default:
                     return false;
             }
@@ -278,19 +270,13 @@ WHERE s.name =@Schema AND t.name=@Name AND c.name = @Column;";
             }
 
             return true;
-
         }
 
         public bool ShowAddIdentityColumn => IsHeap == true;
-
 
         protected override Task<DataTable> OnShowTopTenAsync(ColumnModel<SqlDbType> column, int rowCount)
         {
             return DataSource.Sql($"SELECT TOP {rowCount} {column.Column.QuotedSqlName} AS Value, COUNT(*) AS Count FROM {Table.Name.ToQuotedString()} TABLESAMPLE ({MaxSampleSize} ROWS) WITH (READUNCOMMITTED) GROUP BY {column.Column.QuotedSqlName} ORDER BY COUNT(*) DESC").ToDataTable().ExecuteAsync();
         }
-
-
     }
 }
-
-
