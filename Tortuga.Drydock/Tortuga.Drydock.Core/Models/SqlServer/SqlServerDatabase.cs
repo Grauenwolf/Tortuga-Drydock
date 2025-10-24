@@ -1,79 +1,73 @@
 using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using Tortuga.Chain;
 using Tortuga.Chain.SqlServer;
 
-namespace Tortuga.Drydock.Models.SqlServer
+namespace Tortuga.Drydock.Models.SqlServer;
+
+/// <summary>
+/// This represents a database connection and any cached data about that database.
+/// This class is specialized for SQL Server.
+/// </summary>
+/// <seealso cref="Tortuga.Drydock.Models.Database{Tortuga.Chain.SqlServerDataSource}" />
+public class SqlServerDatabase : DatabaseVM<SqlServerDataSource, SqlServerObjectName, SqlDbType>
 {
-    /// <summary>
-    /// This represents a database connection and any cached data about that database.
-    /// This class is specialized for SQL Server.
-    /// </summary>
-    /// <seealso cref="Tortuga.Drydock.Models.Database{Tortuga.Chain.SqlServerDataSource}" />
-    public class SqlServerDatabase : DatabaseVM<SqlServerDataSource, SqlServerObjectName, SqlDbType>
-    {
-        public SqlServerDatabase(SqlServerDataSource dataSource)
-        {
-            DataSource = dataSource;
-        }
+	public SqlServerDatabase(SqlServerDataSource dataSource) : base(dataSource)
+	{
+	}
 
-        public override sealed async Task LoadSchemaAsync()
-        {
-            StartWork();
-            try
-            {
+	public override sealed async Task LoadSchemaAsync()
+	{
+		StartWork();
+		try
+		{
+			await (Task.Run(() =>
+			{
+				DataSource.DatabaseMetadata.PreloadTables();
+				DataSource.DatabaseMetadata.PreloadViews();
+			})); //Task-10, we need an async version of this.
 
-                await (Task.Run(() =>
-                {
-                    DataSource.DatabaseMetadata.PreloadTables();
-                    DataSource.DatabaseMetadata.PreloadViews();
-                })); //Task-10, we need an async version of this. 
+			Tables.AddRange(DataSource.DatabaseMetadata.GetTablesAndViews().Where(t => t.IsTable).OrderBy(t => t.Name.Schema).ThenBy(t => t.Name.Name).Select(t => new SqlServerTableVM(DataSource, (SqlServerTableOrViewMetadata<SqlDbType>)t)));
+			Views.AddRange(DataSource.DatabaseMetadata.GetTablesAndViews().Where(t => !t.IsTable).OrderBy(t => t.Name.Schema).ThenBy(t => t.Name.Name).Select(t => new ViewVM(t)));
 
-
-                Tables.AddRange(DataSource.DatabaseMetadata.GetTablesAndViews().Where(t => t.IsTable).OrderBy(t => t.Name.Schema).ThenBy(t => t.Name.Name).Select(t => new SqlServerTableVM(DataSource, (SqlServerTableOrViewMetadata<SqlDbType>)t)));
-                Views.AddRange(DataSource.DatabaseMetadata.GetTablesAndViews().Where(t => !t.IsTable).OrderBy(t => t.Name.Schema).ThenBy(t => t.Name.Name).Select(t => new ViewVM(t)));
-
-                const string tableDescriptionsSql = @"SELECT s.name AS SchemaName, t.name AS TableName, ep.value FROM sys.extended_properties ep
+			const string tableDescriptionsSql = @"SELECT s.name AS SchemaName, t.name AS TableName, ep.value FROM sys.extended_properties ep
 INNER JOIN sys.tables t ON ep.major_id = t.object_id AND ep.minor_id = 0
 INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
 AND ep.name = 'MS_Description';";
 
-                var tableDescriptions = await DataSource.Sql(tableDescriptionsSql).ToTable().ExecuteAsync();
-                foreach (var item in tableDescriptions.Rows)
-                {
-                    var table = Tables.Single(t => t.Table.Name.Schema == (string)item["SchemaName"] && t.Table.Name.Name == (string)item["TableName"]);
-                    table.Description = (string)item["value"];
-                }
+			var tableDescriptions = await DataSource.Sql(tableDescriptionsSql).ToTable().ExecuteAsync();
+			foreach (var item in tableDescriptions.Rows)
+			{
+				var table = Tables.Single(t => t.Table.Name.Schema == (string)item["SchemaName"]! && t.Table.Name.Name == (string)item["TableName"]!);
+				table.Description = (string)item["value"]!;
+			}
 
-                const string columnDescriptionsSql = @"SELECT s.name AS SchemaName, t.name AS TableName, c.name AS ColumnName, ep.value FROM sys.extended_properties ep
-INNER JOIN sys.tables t ON ep.major_id = t.object_id 
+			const string columnDescriptionsSql = @"SELECT s.name AS SchemaName, t.name AS TableName, c.name AS ColumnName, ep.value FROM sys.extended_properties ep
+INNER JOIN sys.tables t ON ep.major_id = t.object_id
 INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
 INNER JOIN sys.columns c ON c.object_id = ep.major_id AND c.column_id = ep.minor_id
 AND ep.name = 'MS_Description'";
 
+			var columnDescriptions = await DataSource.Sql(columnDescriptionsSql).ToTable().ExecuteAsync();
+			foreach (var item in columnDescriptions.Rows)
+			{
+				var table = Tables.Single(t => t.Table.Name.Schema == (string)item["SchemaName"]! && t.Table.Name.Name == (string)item["TableName"]!);
+				var column = (SqlServerColumnModel)table.Columns.Single(c => c.Name == (string)item["ColumnName"]!);
+				column.Description = (string)item["value"]!;
+			}
 
-                var columnDescriptions = await DataSource.Sql(columnDescriptionsSql).ToTable().ExecuteAsync();
-                foreach (var item in columnDescriptions.Rows)
-                {
-                    var table = Tables.Single(t => t.Table.Name.Schema == (string)item["SchemaName"] && t.Table.Name.Name == (string)item["TableName"]);
-                    var column = (SqlServerColumnModel)table.Columns.Single(c => c.Name == (string)item["ColumnName"]);
-                    column.Description = (string)item["value"];
-                }
-
-                const string sparseColumnsSql = @"SELECT s.name AS SchemaName, t.name AS TableName, c.name AS ColumnName, c.is_sparse 
-FROM sys.tables t 
+			const string sparseColumnsSql = @"SELECT s.name AS SchemaName, t.name AS TableName, c.name AS ColumnName, c.is_sparse
+FROM sys.tables t
 INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
 INNER JOIN sys.columns c ON c.object_id = t.object_id";
-                var sparseColumns = await DataSource.Sql(sparseColumnsSql).ToTable().ExecuteAsync();
-                foreach (var item in sparseColumns.Rows)
-                {
-                    var table = Tables.Single(t => t.Table.Name.Schema == (string)item["SchemaName"] && t.Table.Name.Name == (string)item["TableName"]);
-                    var column = (SqlServerColumnModel)table.Columns.Single(c => c.Name == (string)item["ColumnName"]);
-                    column.IsSparse = (bool)item["is_sparse"];
-                }
+			var sparseColumns = await DataSource.Sql(sparseColumnsSql).ToTable().ExecuteAsync();
+			foreach (var item in sparseColumns.Rows)
+			{
+				var table = Tables.Single(t => t.Table.Name.Schema == (string)item["SchemaName"]! && t.Table.Name.Name == (string)item["TableName"]!);
+				var column = (SqlServerColumnModel)table.Columns.Single(c => c.Name == (string)item["ColumnName"]!);
+				column.IsSparse = (bool)item["is_sparse"]!;
+			}
 
-                const string relatedTablesSql = @"SELECT s.name AS SchemaName, t.name AS TableName, s2.name AS ReferencedSchemaName, t2.name AS ReferencedTableName
+			const string relatedTablesSql = @"SELECT s.name AS SchemaName, t.name AS TableName, s2.name AS ReferencedSchemaName, t2.name AS ReferencedTableName
 FROM sys.foreign_key_columns fkc
     INNER JOIN sys.tables t
         ON fkc.parent_object_id = t.object_id
@@ -92,36 +86,29 @@ FROM sys.foreign_key_columns fkc
     INNER JOIN sys.foreign_keys fk
         ON fk.object_id = fkc.constraint_object_id";
 
-                var relatedTables = await DataSource.Sql(relatedTablesSql).ToTable().ExecuteAsync();
-                foreach (var item in relatedTables.Rows)
-                {
-                    var table = Tables.Single(t => t.Table.Name.Schema == (string)item["SchemaName"] && t.Table.Name.Name == (string)item["TableName"]);
-                    var relatedTable = Tables.Single(t => t.Table.Name.Schema == (string)item["ReferencedSchemaName"] && t.Table.Name.Name == (string)item["ReferencedTableName"]);
+			var relatedTables = await DataSource.Sql(relatedTablesSql).ToTable().ExecuteAsync();
+			foreach (var item in relatedTables.Rows)
+			{
+				var table = Tables.Single(t => t.Table.Name.Schema == (string)item["SchemaName"]! && t.Table.Name.Name == (string)item["TableName"]!);
+				var relatedTable = Tables.Single(t => t.Table.Name.Schema == (string)item["ReferencedSchemaName"]! && t.Table.Name.Name == (string)item["ReferencedTableName"]!);
 
-                    if (!table.ReferencedTables.Contains(relatedTable))
-                        table.ReferencedTables.Add(relatedTable);
-                    if (!relatedTable.ReferencedByTables.Contains(table))
-                        relatedTable.ReferencedByTables.Add(table);
-                }
+				if (!table.ReferencedTables.Contains(relatedTable))
+					table.ReferencedTables.Add(relatedTable);
+				if (!relatedTable.ReferencedByTables.Contains(table))
+					relatedTable.ReferencedByTables.Add(table);
+			}
+		}
+		finally
+		{
+			StopWork();
+		}
+	}
 
+	async public override Task PreliminaryAnalysisAsync(TableVM table)
+	{
+		var typedTable = (SqlServerTableVM)table;
 
-            }
-            finally
-            {
-                StopWork();
-            }
-
-        }
-
-
-
-
-        async public override Task PreliminaryAnalysisAsync(TableVM table)
-        {
-
-            var typedTable = (SqlServerTableVM)table;
-
-            const string sql = @"SELECT S.name AS [Schema],
+		const string sql = @"SELECT S.name AS [Schema],
        T.name AS Name,
        CONVERT(   BIT,
                   CASE
@@ -159,20 +146,18 @@ WHERE T.name = @Name
 ORDER BY S.name,
          T.name;";
 
-            var tableData = await DataSource.Sql(sql, new { typedTable.Table.Name.Schema, typedTable.Table.Name.Name }).ToObject<TableData>().ExecuteAsync();
-            typedTable.ObjectId = tableData.ObjectId;
-            typedTable.RowCount = tableData.RowCount;
-            typedTable.IndexCount = tableData.IndexCount;
-            typedTable.IsHeap = tableData.IsHeap;
+		var tableData = await DataSource.Sql(sql, new { typedTable.Table.Name.Schema, typedTable.Table.Name.Name }).ToObject<TableData>().ExecuteAsync();
+		typedTable.ObjectId = tableData.ObjectId;
+		typedTable.RowCount = tableData.RowCount;
+		typedTable.IndexCount = tableData.IndexCount;
+		typedTable.IsHeap = tableData.IsHeap;
 
-            table.FixItOperations.RefreshAll();
-        }
+		table.FixItOperations.RefreshAll();
+	}
 
-
-
-        async public override Task PreliminaryAnalysisAsync()
-        {
-            const string sql = @"SELECT S.name AS [Schema],
+	async public override Task PreliminaryAnalysisAsync()
+	{
+		const string sql = @"SELECT S.name AS [Schema],
        T.name AS Name,
        CONVERT(   BIT,
                   CASE
@@ -208,41 +193,30 @@ FROM sys.tables AS T
 ORDER BY S.name,
          T.name;";
 
-            var data = await DataSource.Sql(sql).ToCollection<TableData>().ExecuteAsync();
-            foreach (SqlServerTableVM table in Tables)
-            {
-                foreach (var tableData in data)
-                {
-                    if (tableData.Schema == table.Table.Name.Schema && tableData.Name == table.Table.Name.Name)
-                    {
-                        table.ObjectId = tableData.ObjectId;
-                        table.RowCount = tableData.RowCount;
-                        table.IndexCount = tableData.IndexCount;
-                        table.IsHeap = tableData.IsHeap;
-                        table.FixItOperations.RefreshAll();
-                        table.SortIndex = tableData.SortIndex;
-                        break;
-                    }
-                }
+		var data = await DataSource.Sql(sql).ToCollection<TableData>().ExecuteAsync();
+		foreach (SqlServerTableVM table in Tables)
+			foreach (var tableData in data)
+				if (tableData.Schema == table.Table.Name.Schema && tableData.Name == table.Table.Name.Name)
+				{
+					table.ObjectId = tableData.ObjectId;
+					table.RowCount = tableData.RowCount;
+					table.IndexCount = tableData.IndexCount;
+					table.IsHeap = tableData.IsHeap;
+					table.FixItOperations.RefreshAll();
+					table.SortIndex = tableData.SortIndex;
+					break;
+				}
+	}
 
-
-
-            }
-
-        }
-
-        class TableData
-        {
-            public string Name { get; set; }
-            public string Schema { get; set; }
-            public int ColumnCount { get; set; }
-            public bool IsHeap { get; set; }
-            public int IndexCount { get; set; }
-            public long ObjectId { get; set; }
-            public long RowCount { get; set; }
-            public int SortIndex { get; set; }
-        }
-    }
-
+	class TableData
+	{
+		public required string Name { get; set; }
+		public required string Schema { get; set; }
+		public int ColumnCount { get; set; }
+		public bool IsHeap { get; set; }
+		public int IndexCount { get; set; }
+		public long ObjectId { get; set; }
+		public long RowCount { get; set; }
+		public int SortIndex { get; set; }
+	}
 }
-

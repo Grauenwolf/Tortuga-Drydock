@@ -1,53 +1,58 @@
-﻿using log4net;
-using log4net.Config;
-using System;
+﻿using Microsoft.Extensions.Logging;
 using System.Windows;
 using Tortuga.Drydock.ViewModels;
 using Tortuga.Sails;
 
-namespace Tortuga.Drydock
+namespace Tortuga.Drydock;
+
+/// <summary>
+/// Interaction logic for App.xaml
+/// </summary>
+public partial class App : Application
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
-    {
-        private static readonly ILog s_Log = LogManager.GetLogger(typeof(App));
+	static ILogger s_Log = null!;
 
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            XmlConfigurator.Configure();
+	protected override void OnStartup(StartupEventArgs e)
+	{
+		var loggerFactory = LoggerFactory.Create(
+			builder => builder
+				.AddConsole()
+				.AddDebug()
+			);
 
-            DispatcherUnhandledException += Current_DispatcherUnhandledException;
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            ViewModelBase.UnhandledCommandError += ViewModelBaseImproved_UnhandledCommandEvent;
+		s_Log = loggerFactory.CreateLogger<App>();
 
-            base.OnStartup(e);
+		//XmlConfigurator.Configure();
 
-            s_Log.Info("Starting Tortuga Drydock");
+		DispatcherUnhandledException += Current_DispatcherUnhandledException;
+		AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+		ViewModelBase.UnhandledCommandError += ViewModelBaseImproved_UnhandledCommandEvent;
 
-            MainWindow = new MainWindow()
-            {
-                DataContext = new MainViewModel()
-            };
-            MainWindow.Show();
-        }
+		base.OnStartup(e);
 
-        private void ViewModelBaseImproved_UnhandledCommandEvent(object sender, UnhandledViewModelExceptionEventArgs e)
-        {
-            s_Log.Error("Unhandled ViewModel Exception", e.Exception);
-            e.Handled = true;
-        }
+		s_Log.LogInformation("Starting Tortuga Drydock");
 
-        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
-        {
-            s_Log.Fatal("Unhandled Dispatcher Exception", e.Exception);
-            e.Handled = true;
-        }
+		MainWindow = new MainWindow()
+		{
+			DataContext = new MainViewModel(loggerFactory)
+		};
+		MainWindow.Show();
+	}
 
-        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            s_Log.Fatal("Unhandled AppDomain Exception", (Exception)e.ExceptionObject);
-        }
-    }
+	void ViewModelBaseImproved_UnhandledCommandEvent(object? sender, UnhandledViewModelExceptionEventArgs e)
+	{
+		s_Log.LogError(e.Exception, "Unhandled ViewModel Exception");
+		e.Handled = true;
+	}
+
+	void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+	{
+		s_Log.LogCritical(e.Exception, "Unhandled Dispatcher Exception");
+		e.Handled = true;
+	}
+
+	void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+	{
+		s_Log.LogCritical((Exception)e.ExceptionObject, "Unhandled AppDomain Exception");
+	}
 }

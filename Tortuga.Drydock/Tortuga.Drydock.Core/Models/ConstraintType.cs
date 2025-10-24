@@ -1,11 +1,8 @@
-namespace Tortuga.Drydock.Models
+namespace Tortuga.Drydock.Models;
+
+public enum ConstraintType
 {
-    public enum ConstraintType
-    {
-        Default = 0,
-        ForiegnKey = 1,
-        Check = 2
-    }
+	Default = 0,
+	ForiegnKey = 1,
+	Check = 2
 }
-
-

@@ -1,16 +1,12 @@
-﻿namespace Tortuga.Drydock.Models
+﻿namespace Tortuga.Drydock.Models;
+
+public abstract class FixItColumnOperation<TDbType> : FixItOperation
+where TDbType : struct
 {
-    public abstract class FixItColumnOperation<TDbType> : FixItOperation
-    where TDbType : struct
-    {
-        public ColumnModel<TDbType> Column { get; }
+	public ColumnModel<TDbType> Column { get; }
 
-        protected FixItColumnOperation(TableVM tableVM, ColumnModel<TDbType> column) : base(tableVM)
-        {
-            Column = column;
-        }
-    }
+	protected FixItColumnOperation(TableVM tableVM, ColumnModel<TDbType> column) : base(tableVM)
+	{
+		Column = column;
+	}
 }
-
-
-

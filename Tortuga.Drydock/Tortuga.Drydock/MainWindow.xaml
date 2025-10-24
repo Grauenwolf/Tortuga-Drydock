@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tortuga.Drydock"
-        xmlns:Controls="clr-namespace:Tortuga.Drydock.Controls" 
+        xmlns:Controls="clr-namespace:Tortuga.Drydock.Controls"
         x:Class="Tortuga.Drydock.MainWindow"
         mc:Ignorable="d"
         Title="Tortuga Drydock" Height="{Binding Height}" Width="{Binding Width}" WindowState="{Binding WindowState}"
@@ -17,7 +17,7 @@
 
                 <StackPanel Orientation="Horizontal">
                     <Label Content="Database Type:" />
-                    <RadioButton Content="SQL Server" GroupName="DatabaseType" IsChecked="{Binding UseSqlServer}"/>
+                    <RadioButton Content="SQL Server" GroupName="DatabaseType" IsChecked="{Binding UseSqlServer}" />
                     <RadioButton Content="PostgreSql" GroupName="DatabaseType" IsChecked="{Binding UsePostgreSql}" />
                     <RadioButton Content="Access" GroupName="DatabaseType" IsChecked="{Binding UseAccess}" />
                     <RadioButton Content="SQLite" GroupName="DatabaseType" IsChecked="{Binding UseSQLite}" />
@@ -27,32 +27,29 @@
                     <Label Content="Connection String: " />
                     <TextBox Text="{Binding ConnectionString, UpdateSourceTrigger=PropertyChanged}"
 							 Width="500" />
-                    <Button Command="{Binding EditConnectionCommand}"
+                    <!--<Button Command="{Binding EditConnectionCommand}"
                             IsEnabled="{Binding CanEditConnection}"
 							VerticalAlignment="Center"
-							Content="Edit" />
-
+							Content="Edit" />-->
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Button Command="{Binding ConnectCommand}" VerticalAlignment="Center" Content="Connect"
-                            IsEnabled="{Binding CanConnect}"
-                            />
+                            IsEnabled="{Binding CanConnect}" />
                     <ProgressBar IsIndeterminate="{Binding IsConnecting}" Minimum="0" Maximum="1" Value="{Binding IsConnectedNumber, Mode=OneWay}" Width="100" VerticalAlignment="Stretch" />
 
-                    <Label Content="Status: " VerticalAlignment="Center"/>
-                    <Label Content="{Binding Status}" VerticalAlignment="Center"/>
+                    <Label Content="Status: " VerticalAlignment="Center" />
+                    <Label Content="{Binding Status}" VerticalAlignment="Center" />
                 </StackPanel>
             </StackPanel>
         </GroupBox>
 
-
-        <TabControl DockPanel.Dock="Top" SelectedIndex="{Binding SelectedTab}" >
+        <TabControl DockPanel.Dock="Top" SelectedIndex="{Binding SelectedTab}">
             <TabItem Header="Tables" Visibility="{Binding Database, Converter={StaticResource NotNullToVisibleConverter}}">
                 <DockPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" DataContext="{Binding Database}" IsEnabled="{Binding Idle}">
                         <Button Content="Preliminary Analysis"  Command="{Binding PreliminaryAnalysisCommand}" />
                     </StackPanel>
-                    <Controls:TableGrid DataContext="{Binding Database.Tables}"  />
+                    <Controls:TableGrid DataContext="{Binding Database.Tables}" />
                 </DockPanel>
             </TabItem>
             <TabItem Header="Views" Visibility="Collapsed">
@@ -71,17 +68,15 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-
                         <DataGridTextColumn Header="Schema"
 										Binding="{Binding View.Name.Schema}" />
 
                         <DataGridTextColumn Header="Name"
 										Binding="{Binding View.Name.Name}" />
-
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
-            <TabItem Header="Log" >
+            <TabItem Header="Log">
                 <DockPanel Background="White">
 
                     <ScrollViewer>
@@ -96,9 +91,6 @@
                     </ScrollViewer>
                 </DockPanel>
             </TabItem>
-            
         </TabControl>
-
-
     </DockPanel>
 </Window>

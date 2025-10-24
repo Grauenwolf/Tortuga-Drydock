@@ -1,14 +1,11 @@
-﻿using System;
+﻿namespace Tortuga.Drydock.Models;
 
-namespace Tortuga.Drydock.Models
+public class LogEventArgs : EventArgs
 {
-    public class LogEventArgs : EventArgs
-    {
-        public LogEventArgs(string message)
-        {
-            Message = message;
-        }
+	public LogEventArgs(string message)
+	{
+		Message = message;
+	}
 
-        public string Message { get; }
-    }
+	public string Message { get; }
 }

@@ -1,236 +1,237 @@
-﻿using log4net;
-using Microsoft.Data.ConnectionUI;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
 using System.Windows;
 using System.Windows.Input;
 using Tortuga.Anchor.Collections;
 using Tortuga.Anchor.Modeling;
 using Tortuga.Drydock.Models;
-using Tortuga.Drydock.Properties;
 using Tortuga.Drydock.Views;
 using Tortuga.Sails;
 
-namespace Tortuga.Drydock.ViewModels
+namespace Tortuga.Drydock.ViewModels;
+
+internal class MainViewModel : ViewModelBase
 {
-    internal class MainViewModel : ViewModelBase
-    {
-        private static readonly ILog s_Log = LogManager.GetLogger(typeof(App));
+	readonly ILogger s_Log;
 
-        private ObservableCollectionExtended<string> m_LogEvents = new ObservableCollectionExtended<string>();
+	ObservableCollectionExtended<string> m_LogEvents = new ObservableCollectionExtended<string>();
 
-        public ICommand AnalyzeTableCommand => GetCommand<TableVM>(async t => await AnalyzeTableAsync(t));
+	public MainViewModel(ILoggerFactory loggerFactory)
+	{
+		s_Log = loggerFactory.CreateLogger<MainViewModel>();
+	}
 
-        [CalculatedField("DatabaseType,IsConnecting,ConnectionString")]
-        public bool CanConnect => Enum.IsDefined(typeof(DatabaseType), DatabaseType) && !IsConnecting && !string.IsNullOrWhiteSpace(ConnectionString);
+	public ICommand AnalyzeTableCommand => GetCommand<TableVM>(async t => await AnalyzeTableAsync(t));
 
-        [CalculatedField("DatabaseType")]
-        public bool CanEditConnection
-        {
-            get
-            {
-                switch (DatabaseType)
-                {
-                    case DatabaseType.SqlServer:
-                    case DatabaseType.Access:
-                        return true;
+	[CalculatedField("DatabaseType,IsConnecting,ConnectionString")]
+	public bool CanConnect => Enum.IsDefined(typeof(DatabaseType), DatabaseType) && !IsConnecting && !string.IsNullOrWhiteSpace(ConnectionString);
 
-                    default:
-                        return false;
-                }
-            }
-        }
+	[CalculatedField("DatabaseType")]
+	public bool CanEditConnection
+	{
+		get
+		{
+			switch (DatabaseType)
+			{
+				case DatabaseType.SqlServer:
+				case DatabaseType.Access:
+					return true;
 
-        public ICommand ConnectCommand => GetCommand(async () => await ConnectAsync());
+				default:
+					return false;
+			}
+		}
+	}
 
-        public string ConnectionString
-        {
-            get => GetDefault(Settings.Default.LastConnectionString);
-            set => Set(value);
-        }
+	public ICommand ConnectCommand => GetCommand(async () => await ConnectAsync());
 
-        public DatabaseVM Database { get => Get<DatabaseVM>(); set => Set(value); }
-        public DatabaseType DatabaseType { get => GetDefault((DatabaseType)Settings.Default.LastDatabaseType); set => Set(value); }
-        public ICommand EditConnectionCommand => GetCommand(EditConnection);
+	public string ConnectionString
+	{
+		get => Get<string>();
+		//get => GetDefault(Settings.Default.LastConnectionString);
+		set => Set(value);
+	}
 
-        public double Height { get => GetDefault(400); set => Set(value); }
-        public bool IsConnected { get => Get<bool>(); private set => Set(value); }
+	public DatabaseVM? Database { get => Get<DatabaseVM>(); set => Set(value); }
+	public DatabaseType DatabaseType { get => GetDefault(DatabaseType.SqlServer); set => Set(value); }
+	//public DatabaseType DatabaseType { get => GetDefault((DatabaseType)Settings.Default.LastDatabaseType); set => Set(value); }
+	//public ICommand EditConnectionCommand => GetCommand(EditConnection);
 
-        [CalculatedField("IsConnected")]
-        public int IsConnectedNumber { get => IsConnected ? 1 : 0; }
+	public double Height { get => GetDefault(400); set => Set(value); }
+	public bool IsConnected { get => Get<bool>(); private set => Set(value); }
 
-        public bool IsConnecting { get => Get<bool>(); private set => Set(value); }
-        public int SelectedTab { get => GetDefault(2); set => Set(value); }
-        public ReadOnlyObservableCollectionExtended<string> LogEvents => m_LogEvents.ReadOnlyWrapper;
-        public string Status { get => Get<string>(); private set => Set(value); }
+	[CalculatedField("IsConnected")]
+	public int IsConnectedNumber { get => IsConnected ? 1 : 0; }
 
-        [CalculatedField("DatabaseType")]
-        public bool UseAccess { get => DatabaseType == DatabaseType.Access; set { if (value) DatabaseType = DatabaseType.Access; } }
+	public bool IsConnecting { get => Get<bool>(); private set => Set(value); }
+	public int SelectedTab { get => GetDefault(2); set => Set(value); }
+	public ReadOnlyObservableCollectionExtended<string> LogEvents => m_LogEvents.ReadOnlyWrapper;
+	public string Status { get => Get<string>(); private set => Set(value); }
 
-        [CalculatedField("DatabaseType")]
-        public bool UseMySQL { get => DatabaseType == DatabaseType.MySQL; set { if (value) DatabaseType = DatabaseType.MySQL; } }
+	[CalculatedField("DatabaseType")]
+	public bool UseAccess { get => DatabaseType == DatabaseType.Access; set { if (value) DatabaseType = DatabaseType.Access; } }
 
-        [CalculatedField("DatabaseType")]
-        public bool UsePostgreSql { get => DatabaseType == DatabaseType.PostgreSql; set { if (value) DatabaseType = DatabaseType.PostgreSql; } }
+	[CalculatedField("DatabaseType")]
+	public bool UseMySQL { get => DatabaseType == DatabaseType.MySQL; set { if (value) DatabaseType = DatabaseType.MySQL; } }
 
-        [CalculatedField("DatabaseType")]
-        public bool UseSQLite { get => DatabaseType == DatabaseType.SQLite; set { if (value) DatabaseType = DatabaseType.SQLite; } }
+	[CalculatedField("DatabaseType")]
+	public bool UsePostgreSql { get => DatabaseType == DatabaseType.PostgreSql; set { if (value) DatabaseType = DatabaseType.PostgreSql; } }
 
-        [CalculatedField("DatabaseType")]
-        public bool UseSqlServer { get => DatabaseType == DatabaseType.SqlServer; set { if (value) DatabaseType = DatabaseType.SqlServer; } }
+	[CalculatedField("DatabaseType")]
+	public bool UseSQLite { get => DatabaseType == DatabaseType.SQLite; set { if (value) DatabaseType = DatabaseType.SQLite; } }
 
-        public double Width { get => GetDefault(900); set => Set(value); }
+	[CalculatedField("DatabaseType")]
+	public bool UseSqlServer { get => DatabaseType == DatabaseType.SqlServer; set { if (value) DatabaseType = DatabaseType.SqlServer; } }
 
-        public WindowState WindowState { get => GetDefault(WindowState.Normal); set => Set(value); }
+	public double Width { get => GetDefault(900); set => Set(value); }
 
-        public async void ShowDialog(object sender, DialogRequestedEventArgs e)
-        {
-            switch (e.DataContext)
-            {
-                case FixItVM dc:
-                    ShowFixItWindow(dc);
-                    break;
+	public WindowState WindowState { get => GetDefault(WindowState.Normal); set => Set(value); }
 
-                case DataVM dc:
-                    ShowDataWindow(dc);
-                    break;
+	public async void ShowDialog(object? sender, DialogRequestedEventArgs e)
+	{
+		switch (e.DataContext)
+		{
+			case FixItVM dc:
+				ShowFixItWindow(dc);
+				break;
 
-                case TableVM table:
-                    await AnalyzeTableAsync(table);
-                    break;
-            }
-        }
+			case DataVM dc:
+				ShowDataWindow(dc);
+				break;
 
-        public void ShowFixItWindow(FixItVM dataContext)
-        {
-            var window = new FixItWindow() { DataContext = dataContext };
-            window.Show();
-        }
+			case TableVM table:
+				await AnalyzeTableAsync(table);
+				break;
+		}
+	}
 
-        public void ShowDataWindow(DataVM dataContext)
-        {
-            var window = new DataWindow() { DataContext = dataContext };
-            window.Show();
-        }
+	public void ShowFixItWindow(FixItVM dataContext)
+	{
+		var window = new FixItWindow() { DataContext = dataContext };
+		window.Show();
+	}
 
-        private async Task AnalyzeTableAsync(TableVM table)
-        {
-            foreach (var view in Application.Current.Windows.OfType<TableWindow>())
-            {
-                if (view.DataContext == table)
-                {
-                    if (view.WindowState == WindowState.Minimized)
-                        view.WindowState = WindowState.Normal;
-                    view.Activate();
-                    return;
-                }
-            }
+	public void ShowDataWindow(DataVM dataContext)
+	{
+		var window = new DataWindow() { DataContext = dataContext };
+		window.Show();
+	}
 
-            var window = new TableWindow() { DataContext = table };
-            window.Height = Height;
-            window.Width = Width;
-            if (WindowState == WindowState.Maximized)
-                window.WindowState = WindowState.Maximized;
-            window.Show();
-            if (table.RowCount == null)
-                await Database.PreliminaryAnalysisAsync(table);
-        }
+	private async Task AnalyzeTableAsync(TableVM table)
+	{
+		foreach (var view in Application.Current.Windows.OfType<TableWindow>())
+		{
+			if (view.DataContext == table)
+			{
+				if (view.WindowState == WindowState.Minimized)
+					view.WindowState = WindowState.Normal;
+				view.Activate();
+				return;
+			}
+		}
 
-        private async Task ConnectAsync()
-        {
-            if (IsConnecting)
-                return;
+		var window = new TableWindow() { DataContext = table };
+		window.Height = Height;
+		window.Width = Width;
+		if (WindowState == WindowState.Maximized)
+			window.WindowState = WindowState.Maximized;
+		window.Show();
+		if (table.RowCount == null)
+			await Database!.PreliminaryAnalysisAsync(table);
+	}
 
-            IsConnecting = false;
-            IsConnected = false;
+	private async Task ConnectAsync()
+	{
+		if (IsConnecting)
+			return;
 
-            try
-            {
-                IsConnecting = true;
+		IsConnecting = false;
+		IsConnected = false;
 
-                LogEvent($"Creating data source for {DatabaseType}");
+		try
+		{
+			IsConnecting = true;
 
-                Database = DatabaseVM.Create(DatabaseType, ConnectionString);
+			LogEvent($"Creating data source for {DatabaseType}");
 
-                LogEvent($"Testing connection to {Database.DataSource.Name} ({DatabaseType})");
+			Database = DatabaseVM.Create(DatabaseType, ConnectionString);
 
-                await Database.DataSource.TestConnectionAsync();
+			LogEvent($"Testing connection to {Database.DataSource.Name} ({DatabaseType})");
 
-                LogEvent($"Loading schema for {Database.DataSource.Name} ({DatabaseType})");
+			await Database.DataSource.TestConnectionAsync();
 
-                await Database.LoadSchemaAsync();
-                Database.AttachUIEvents(ShowDialog, LogEvent);
+			LogEvent($"Loading schema for {Database.DataSource.Name} ({DatabaseType})");
 
-                LogEvent($"Connected to {Database.DataSource.Name}!");
+			await Database.LoadSchemaAsync();
+			Database.AttachUIEvents(ShowDialog, LogEvent);
 
-                IsConnected = true;
+			LogEvent($"Connected to {Database.DataSource.Name}!");
 
-                SelectedTab = 0;
+			IsConnected = true;
 
-                Settings.Default.LastConnectionString = ConnectionString;
-                Settings.Default.LastDatabaseType = (int)DatabaseType;
-                Settings.Default.Save();
-            }
-            catch (Exception ex)
-            {
-                LogEvent(ex.Message);
-                Database = null;
-                throw;
-            }
-            finally
-            {
-                IsConnecting = false;
-            }
-        }
+			SelectedTab = 0;
 
-        private void EditConnection()
-        {
-            using (var dialog = new DataConnectionDialog())
-            {
-                //ref: http://stackoverflow.com/questions/6895251/display-a-connectionstring-dialog/32326126#32326126
+			//Settings.Default.LastConnectionString = ConnectionString;
+			//Settings.Default.LastDatabaseType = (int)DatabaseType;
+			//Settings.Default.Save();
+		}
+		catch (Exception ex)
+		{
+			LogEvent(ex.Message);
+			Database = null;
+			throw;
+		}
+		finally
+		{
+			IsConnecting = false;
+		}
+	}
 
-                switch (DatabaseType)
-                {
-                    case DatabaseType.SqlServer:
-                        dialog.DataSources.Add(DataSource.SqlDataSource);
-                        break;
+	//private void EditConnection()
+	//{
+	//	using (var dialog = new DataConnectionDialog())
+	//	{
+	//		//ref: http://stackoverflow.com/questions/6895251/display-a-connectionstring-dialog/32326126#32326126
 
-                    case DatabaseType.Access:
-                        dialog.DataSources.Add(DataSource.AccessDataSource);
-                        break;
-                }
+	//		switch (DatabaseType)
+	//		{
+	//			case DatabaseType.SqlServer:
+	//				dialog.DataSources.Add(DataSource.SqlDataSource);
+	//				break;
 
-                try
-                {
-                    dialog.ConnectionString = ConnectionString;
-                }
-                catch
-                {
-                    //Connection string format not supported.
-                    dialog.ConnectionString = null;
-                }
+	//			case DatabaseType.Access:
+	//				dialog.DataSources.Add(DataSource.AccessDataSource);
+	//				break;
+	//		}
 
-                // The way how you show the dialog is somewhat unorthodox; `dialog.ShowDialog()`
-                // would throw a `NotSupportedException`. Do it this way instead:
-                System.Windows.Forms.DialogResult userChoice = DataConnectionDialog.Show(dialog);
+	//		try
+	//		{
+	//			dialog.ConnectionString = ConnectionString;
+	//		}
+	//		catch
+	//		{
+	//			//Connection string format not supported.
+	//			dialog.ConnectionString = null;
+	//		}
 
-                // Return the resulting connection string if a connection was selected:
-                if (userChoice == System.Windows.Forms.DialogResult.OK)
-                    ConnectionString = dialog.ConnectionString;
-            }
-        }
+	//		// The way how you show the dialog is somewhat unorthodox; `dialog.ShowDialog()`
+	//		// would throw a `NotSupportedException`. Do it this way instead:
+	//		System.Windows.Forms.DialogResult userChoice = DataConnectionDialog.Show(dialog);
 
-        private void LogEvent(string message)
-        {
-            s_Log.Info(message);
-            m_LogEvents.Add(message);
-            Status = message;
-        }
+	//		// Return the resulting connection string if a connection was selected:
+	//		if (userChoice == System.Windows.Forms.DialogResult.OK)
+	//			ConnectionString = dialog.ConnectionString;
+	//	}
+	//}
 
-        private void LogEvent(object sender, LogEventArgs e)
-        {
-            LogEvent(e.Message);
-        }
-    }
+	private void LogEvent(string message)
+	{
+		s_Log.LogInformation(message);
+		m_LogEvents.Add(message);
+		Status = message;
+	}
+
+	private void LogEvent(object? sender, LogEventArgs e)
+	{
+		LogEvent(e.Message);
+	}
 }

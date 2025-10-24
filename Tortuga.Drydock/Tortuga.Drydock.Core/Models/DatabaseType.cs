@@ -1,13 +1,12 @@
+namespace Tortuga.Drydock.Models;
 
-namespace Tortuga.Drydock.Models
+public enum DatabaseType
 {
-    public enum DatabaseType
-    {
-        //None = 0,
-        SqlServer = 1,
-        PostgreSql = 2,
-        Access = 3,
-        SQLite = 4,
-        MySQL = 5
-    }
+	//None = 0,
+	SqlServer = 1,
+
+	PostgreSql = 2,
+	Access = 3,
+	SQLite = 4,
+	MySQL = 5
 }

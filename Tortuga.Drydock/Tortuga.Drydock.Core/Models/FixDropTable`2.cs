@@ -1,35 +1,34 @@
 using System.Text;
 
-namespace Tortuga.Drydock.Models
+namespace Tortuga.Drydock.Models;
+
+public class FixDropTable<TName, TDbType> : FixItOperation
+	where TName : struct
+	where TDbType : struct
 {
-    public class FixDropTable<TName, TDbType> : FixItOperation
-        where TDbType : struct
-    {
-        public FixDropTable(TableVM<TName, TDbType> tableVM) : base(tableVM)
-        {
-        }
+	public FixDropTable(TableVM<TName, TDbType> tableVM) : base(tableVM)
+	{
+	}
 
-        public override string Title => "Unused Table";
-        public override string ToolTip => "Generate script to drop unused table.";
-        protected override bool OnRefresh() => TableVM.RowCount == 0;
+	public override string Title => "Unused Table";
+	public override string ToolTip => "Generate script to drop unused table.";
 
-        protected override FixItVM OnFixIt()
-        {
-            var verification = new StringBuilder();
-            var change = new StringBuilder();
+	protected override bool OnRefresh() => TableVM.RowCount == 0;
 
-            change.AppendLine($"DROP TABLE {TableVM.QuotedTableName};");
+	protected override FixItVM OnFixIt()
+	{
+		var verification = new StringBuilder();
+		var change = new StringBuilder();
 
-            verification.AppendLine(TableVM.DataSource.From(TableVM.QuotedTableName).AsCount().CommandText());
+		change.AppendLine($"DROP TABLE {TableVM.QuotedTableName};");
 
-            return new FixItVM()
-            {
-                WindowTitle = $"Unused Table",
-                VerificationSql = verification.ToString(),
-                ChangeSql = change.ToString()
-            };
-        }
-    }
+		verification.AppendLine(TableVM.DataSource.From(TableVM.QuotedTableName).AsCount().CommandText());
+
+		return new FixItVM()
+		{
+			WindowTitle = $"Unused Table",
+			VerificationSql = verification.ToString(),
+			ChangeSql = change.ToString()
+		};
+	}
 }
-
-
